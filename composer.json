@@ -1,0 +1,30 @@
+{
+  "name": "nambu-ch/pimcore-image-loader",
+  "type": "pimcore-bundle",
+  "license": "GPL-3.0+",
+  "description": "Pimcore 5.x Load images depending on box size",
+  "keywords": ["pimcore", "image"],
+  "homepage": "https://github.com/nambu-ch/pimcore-image-loader",
+  "authors": [
+    {
+      "name": "nambu GmbH Dominik Schnieper",
+      "email": "ds@nambu.ch",
+      "homepage": "https://www.nambu.ch/",
+      "role": "Developer"
+    }
+  ],
+  "autoload": {
+    "psr-4": {
+      "ImageLoaderBundle\\": "src/ImageLoaderBundle"
+    }
+  },
+  "extra": {
+    "pimcore": {
+      "bundles": [
+        "ImageLoaderBundle\\ImageLoaderBundle"
+      ]
+    }
+  },
+  "require": {
+  }
+}

@@ -1,0 +1,8 @@
+services:
+  _defaults:
+    autowire: true
+    autoconfigure: true
+
+  imageloaderbundle.install.installer:
+    class: ImageLoaderBundle\Install\Installer
+    public: true
