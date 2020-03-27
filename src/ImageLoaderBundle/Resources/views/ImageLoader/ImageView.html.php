@@ -1,6 +1,6 @@
 <?php
 /**
- * @var \Pimcore\Templating\PhpEngine $view
+ * @var \Pimcore\Templating\PhpEngine       $view
  * @var \Pimcore\Templating\GlobalVariables $app
  */
 
@@ -11,7 +11,6 @@ $enableImageloader = $view->enableImageloader ?? false;
 $isBackgroundImage = $view->isBackgroundImage ?? false;
 $imageCssClass = $view->imageCssClass;
 $enableLazyload = $view->enableLazyload ?? false;
-$thumbnail = $view->thumbnail ?? null;
 $thumbnailNames = $view->thumbnailNames ?? null;
 $hasImageBlock = false;
 $sizesOptions = $view->sizesOptions;
@@ -54,10 +53,10 @@ if (!function_exists("getHotspotLinks")) {
                 if (\Pimcore::inDebugMode()) {
                     echo 'background-color:rgba(255,255,255,0.4);';
                 }
-                echo 'top:' . ($area["top"]) . '%;';
-                echo 'left:' . ($area["left"]) . '%;';
-                echo 'width:' . ($area["width"]) . '%;';
-                echo 'height:' . ($area["height"]) . '%;" href="' . $linkEl->getFullPath() . '" data-href="' . $linkEl->getFullPath() . '"></a>';
+                echo 'top:'.($area["top"]).'%;';
+                echo 'left:'.($area["left"]).'%;';
+                echo 'width:'.($area["width"]).'%;';
+                echo 'height:'.($area["height"]).'%;" href="'.$linkEl->getFullPath().'" data-href="'.$linkEl->getFullPath().'"></a>';
             }
         }
     }
@@ -76,46 +75,61 @@ if (!function_exists("getThumbnailConfig")) {
 $options = array();
 
 if ($image instanceof Pimcore\Model\Asset\Image && stripos($image->getMimetype(), "svg") !== false) {
-    echo file_get_contents(PIMCORE_ASSET_DIRECTORY . $image->getRealFullPath());
+    echo file_get_contents(PIMCORE_ASSET_DIRECTORY.$image->getRealFullPath());
 } else if ($enableImageloader) {
     $altText = ($hasImageBlock) ? $imageBlock->getAlt() : $image->getProperty("alt") ?? $image->getMetadata("alt");
     echo '<div style="position:relative;overflow:hidden;" class="image-loader"';
     if (!empty($sizeSelector)) {
-        echo ' data-sizeSelector="' . $sizeSelector . '"';
+        echo ' data-sizeSelector="'.$sizeSelector.'"';
     }
     $thumbConfig = (is_array($view->thumbnail) ? $view->thumbnail : []);
     $widths = [320, 480, 768, 1024, 1280, 1920];
+    $emptyImageThumbnail = null;
     $imageSizes = [];
     if ($hasImageBlock) {
         if (is_array($thumbnailNames) && count($thumbnailNames) > 0) {
             foreach ($thumbnailNames as $w => $thumbnailName) {
-                $imageSizes[] = $imageBlock->getThumbnail($thumbnailName, false).' '.$w;
+                $thumbnail = $imageBlock->getThumbnail($thumbnailName);
+                if (is_null($emptyImageThumbnail)) $emptyImageThumbnail = $thumbnail;
+                $imageSizes[] = $thumbnail.' '.$w;
             }
         } else {
             foreach ($widths as $w) {
                 if (isset($sizesOptions[$w])) {
                     $image = $sizesOptions[$w]['imageTag'];
-                    $imageSizes[] = $image->getThumbnail(getThumbnailConfig($thumbConfig, $w), false).' '.$w;
+                    $thumbnail = $image->getThumbnail(getThumbnailConfig($thumbConfig, $w));
+                    if (is_null($emptyImageThumbnail)) $emptyImageThumbnail = $thumbnail;
+                    $imageSizes[] = $thumbnail.' '.$w;
                 } else {
-                    $imageSizes[] = $imageBlock->getThumbnail(getThumbnailConfig($thumbConfig, $w), false).' '.$w;
+                    $thumbnail = $imageBlock->getThumbnail(getThumbnailConfig($thumbConfig, $w));
+                    if (is_null($emptyImageThumbnail)) $emptyImageThumbnail = $thumbnail;
+                    $imageSizes[] = $thumbnail.' '.$w;
                 }
             }
         }
     } else {
         if (is_array($thumbnailNames) && count($thumbnailNames) > 0) {
             foreach ($thumbnailNames as $w => $thumbnailName) {
-                $imageSizes[] = $image->getThumbnail($thumbnailName, false).' '.$w;
+                $thumbnail = $imageBlock->getThumbnail($thumbnailName);
+                if (is_null($emptyImageThumbnail)) $emptyImageThumbnail = $thumbnail;
+                $imageSizes[] = $thumbnail.' '.$w;
             }
         } else {
             foreach ($widths as $w) {
-                $imageSizes[] = $image->getThumbnail(getThumbnailConfig($thumbConfig, $w), false).' '.$w;
+                $thumbnail = $image->getThumbnail(getThumbnailConfig($thumbConfig, $w));
+                if (is_null($emptyImageThumbnail)) $emptyImageThumbnail = $thumbnail;
+                $imageSizes[] = $thumbnail.' '.$w;
             }
         }
     }
-    echo ' data-loader="' . join(",", $imageSizes) . '"';
-    echo ($isBackgroundImage ? ' data-loader-bg="true"' : '') . '>';
+    echo ' data-loader="'.join(",", $imageSizes).'"';
+    echo ($isBackgroundImage ? ' data-loader-bg="true"' : '').'>';
     if (!$isBackgroundImage || !empty($imageCssClass)) {
-        echo '<img class="img-fluid '.$imageCssClass.'" src="/bundles/imageloader/empty.png" alt="' . $altText . '" />';
+        if ($emptyImageThumbnail instanceof \Pimcore\Model\Asset\Image\Thumbnail) {
+            echo $emptyImageThumbnail->getHtml(["class" => "img-fluid ".$imageCssClass], ["srcset", "width", "height"]);
+        } else {
+            echo '<img class="img-fluid '.$imageCssClass.'" src="'.$imageSizes[0].'" alt="'.$altText.'" />';
+        }
     }
     if (!empty($hotspots)) {
         getHotspotLinks($imageBlock, $hotspots);
@@ -130,7 +144,7 @@ if ($image instanceof Pimcore\Model\Asset\Image && stripos($image->getMimetype()
     } else {
         $thumb = $image->getThumbnail($this->thumbnailConfig ?? array("width" => 1024), false);
     }
-    echo '<img class="lazy ' . ($this->cssClass ?? "img-fluid") . '" src="/bundles/imageloader/empty.png" data-src="' . $thumb . '" width="' . $thumb->getWidth() . '" height="' . $thumb->getHeight() . '" />';
+    echo '<img class="lazy '.($this->cssClass ?? "img-fluid").'" src="/bundles/imageloader/empty.png" data-src="'.$thumb.'" width="'.$thumb->getWidth().'" height="'.$thumb->getHeight().'" />';
     if (!empty($hotspots)) {
         getHotspotLinks($imageBlock, $hotspots);
     }
@@ -139,9 +153,9 @@ if ($image instanceof Pimcore\Model\Asset\Image && stripos($image->getMimetype()
         $this->thumbnailConfig = $view->thumbnail;
     }
     if ($hasImageBlock) {
-        echo '<img class="' . ($this->cssClass ?? "img-fluid") . '" src="' . $imageBlock->getThumbnail($this->thumbnailConfig ?? array("width" => 1024), false) . '" />';
+        echo $imageBlock->getThumbnail($this->thumbnailConfig ?? array("width" => 1024))->getHtml(["class" => $this->cssClass ?? "img-fluid"]);
     } else {
-        echo '<img class="' . ($this->cssClass ?? "img-fluid") . '" src="' . $image->getThumbnail($this->thumbnailConfig ?? array("width" => 1024), false) . '" />';
+        echo $image->getThumbnail($this->thumbnailConfig ?? array("width" => 1024))->getHtml(["class" => $this->cssClass ?? "img-fluid"]);
     }
     if (!empty($hotspots)) {
         getHotspotLinks($imageBlock, $hotspots);
