@@ -2,7 +2,6 @@
   "name": "nambu-ch/pimcore-image-loader",
   "type": "pimcore-bundle",
   "license": "GPL-3.0+",
-  "version": "dev-master",
   "description": "Pimcore 5.x Load images depending on box size",
   "keywords": ["pimcore", "image"],
   "homepage": "https://github.com/nambu-ch/pimcore-image-loader",

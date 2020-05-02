@@ -73,6 +73,8 @@ class ImageLoaderTwigExtensions extends \Twig\Extension\AbstractExtension {
                 }
             }
         }
+
+        return $imageSizes;
     }
 
     private function imageloaderFromOptions(array $options) {
