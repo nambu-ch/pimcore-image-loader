@@ -43,6 +43,7 @@ class ImageLoaderTwigExtensions extends \Twig\Extension\AbstractExtension {
         $options["emptyImageThumbnail"] = $emptyImageThumbnail;
         $options["hotspots"] = $imageBlock->getHotspots();
         $options["imageBlock"] = $imageBlock;
+        $options["altText"] = $imageBlock->getAlt();
 
         return $this->imageloaderFromOptions($options);
     }
@@ -88,7 +89,12 @@ class ImageLoaderTwigExtensions extends \Twig\Extension\AbstractExtension {
 
         if (!isset($options["isBackgroundImage"]) || !isset($options["imageCssClass"])) {
             if ($options["emptyImageThumbnail"] instanceof Asset\Image\Thumbnail) {
-                $html[] = $options["emptyImageThumbnail"]->getHtml(["class" => "img-fluid ".$options["imageCssClass"]], ["srcset", "width", "height"]);
+                $html[] = $options["emptyImageThumbnail"]->getHtml([
+                        "class" => "img-fluid ".$options["imageCssClass"],
+                        "alt" => $options["altText"] ?? '',
+                    ],
+                    ["srcset", "width", "height"]
+                );
             } else {
                 $html[] = '<img class="img-fluid '.$options["imageCssClass"].'" src="'.$options["imageSizes"][0].'" alt="'.($options["altText"] ?? '').'" />';
             }
@@ -147,7 +153,5 @@ class ImageLoaderTwigExtensions extends \Twig\Extension\AbstractExtension {
 
         return join("", $html);
     }
-
-
 
 }

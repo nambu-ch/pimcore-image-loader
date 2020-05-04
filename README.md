@@ -64,6 +64,7 @@ Following options are available:
 | `sizeSelector`      | string  | jQuery CSS selector to a html element which will be used for determining the size. e.g. '.some-element'                    |
 | `widths`            | array   | List of thumbnail widths to override default sizes e.g. ```[ 480, 1024, 1920 ]```                                          |
 | `sizesOptions`      | array   | List of options e.g. ```[ 480 => [ 'size' => 480, 'imageTag' => $view->image('image-480') ]``` ]                           |
+| `altText`           | string  | Alt-Text of the image.                                                                                                     |
 
 ### Advanced usage
 
