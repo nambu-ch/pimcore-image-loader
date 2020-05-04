@@ -3,7 +3,7 @@ Pimcore 5.x/6.x bundle to automate the minification of images inside a webpage.
 
 Automatically generates all needed thumbnails and loads them in relation to the
 width of the surrounding html-element. The smallest image will be loaded as the default.
-Default image sizes are [320, 480, 768, 1024, 1280, 1920].
+Default image sizes are ```[320, 480, 768, 1024, 1280, 1920]```.
 
 ## Install and Enable
 
@@ -25,10 +25,18 @@ $view->headScript()->appendFile('/bundles/imageloader/js/imageloader.js');
 ### Example
 
 ```php
+$imageBlock = $view->image("image");
+if ($editmode) {
+    echo $imageBlock;
+} else {
+    echo $view->template("ImageLoaderBundle:ImageLoader:ImageView.html.php", [
+        "image" => $imageBlock,
+    ]);
+}
+// or
 $image = Asset::getById(2);
 echo $view->template("ImageLoaderBundle:ImageLoader:ImageView.html.php", [
     "image" => $image,
-    "enableImageloader" => true,
 ]);
 ```
 ```twig
@@ -48,14 +56,14 @@ echo $view->template("ImageLoaderBundle:ImageLoader:ImageView.html.php", [
 
 Following options are available:
 
-| Name                | Type    | Description                                                                                                          |
-|---------------------|---------|----------------------------------------------------------------------------------------------------------------------|
-| `isBackgroundImage` | boolean | Set to true to load image as css background, instead of img-tag.                                                     |
-| `imageCssClass`     | string  | A CSS class to apply to the image.                                                                                   |
-| `thumbnailNames`    | array   | List of size => thumbnail-names to generate the different sizes. e.g. [ 320 => 'thumb-small', 1024 => 'thumb-big' ]  |
-| `sizeSelector`      | string  | jQuery CSS selector to a html element which will be used for determining the size. e.g. '.some-element'              |
-| `widths`            | array   | List of thumbnail widths to override default sizes e.g. [ 480, 1024, 1920 ]                                          |
-| `sizesOptions`      | array   | List of options e.g. [ 480 => [ 'size' => 480, 'imageTag' => $view->image('image-480') ] ]                           |
+| Name                | Type    | Description                                                                                                                |
+|---------------------|---------|----------------------------------------------------------------------------------------------------------------------------|
+| `isBackgroundImage` | boolean | Set to true to load image as css background, instead of img-tag.                                                           |
+| `imageCssClass`     | string  | A CSS class to apply to the image.                                                                                         |
+| `thumbnailNames`    | array   | List of size => thumbnail-names to generate the different sizes. e.g. ```[ 320 => 'thumb-small', 1024 => 'thumb-big' ]```  |
+| `sizeSelector`      | string  | jQuery CSS selector to a html element which will be used for determining the size. e.g. '.some-element'                    |
+| `widths`            | array   | List of thumbnail widths to override default sizes e.g. ```[ 480, 1024, 1920 ]```                                          |
+| `sizesOptions`      | array   | List of options e.g. ```[ 480 => [ 'size' => 480, 'imageTag' => $view->image('image-480') ]``` ]                           |
 
 ### Advanced usage
 
