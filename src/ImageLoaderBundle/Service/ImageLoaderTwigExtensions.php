@@ -87,7 +87,7 @@ class ImageLoaderTwigExtensions extends \Twig\Extension\AbstractExtension {
         $html[] = (isset($options["isBackgroundImage"]) ? ' data-loader-bg="true"' : '').'';
         $html[] = '>';
 
-        if (!isset($options["isBackgroundImage"]) || !isset($options["imageCssClass"])) {
+        if (!isset($options["isBackgroundImage"]) || isset($options["imageCssClass"])) {
             if ($options["emptyImageThumbnail"] instanceof Asset\Image\Thumbnail) {
                 $html[] = $options["emptyImageThumbnail"]->getHtml([
                         "class" => "img-fluid ".$options["imageCssClass"],
