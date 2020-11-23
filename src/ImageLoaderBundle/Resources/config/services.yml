@@ -4,4 +4,7 @@ services:
     class: ImageLoaderBundle\Install\Installer
     public: true
 
-  ImageLoaderBundle\Service\ImageLoaderTwigExtensions: ~
+  imageloaderbundle.extensions.twig_extension:
+    public: true
+    class: ImageLoaderBundle\Service\ImageLoaderTwigExtensions
+    tags: [ 'twig.extension' ]
