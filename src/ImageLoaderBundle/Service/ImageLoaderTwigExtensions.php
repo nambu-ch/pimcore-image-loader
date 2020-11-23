@@ -79,15 +79,17 @@ class ImageLoaderTwigExtensions extends \Twig\Extension\AbstractExtension {
     }
 
     private function imageloaderFromOptions(array $options) {
+        if (!isset($options["isBackgroundImage"])) $options["isBackgroundImage"] = false;
+
         $html = ['<div style="position:relative;overflow:hidden;" class="image-loader"'];
         if (isset($options["sizeSelector"]) && !empty($options["sizeSelector"])) {
             $html[] = ' data-sizeSelector="'.$options["sizeSelector"].'"';
         }
         $html[] = ' data-loader="'.join(",", $options["imageSizes"]).'"';
-        $html[] = (isset($options["isBackgroundImage"]) ? ' data-loader-bg="true"' : '').'';
+        $html[] = (($options["isBackgroundImage"]) ? ' data-loader-bg="true"' : '').'';
         $html[] = '>';
 
-        if (!isset($options["isBackgroundImage"]) || isset($options["imageCssClass"])) {
+        if (!($options["isBackgroundImage"]) || isset($options["imageCssClass"])) {
             if ($options["emptyImageThumbnail"] instanceof Asset\Image\Thumbnail) {
                 $html[] = $options["emptyImageThumbnail"]->getHtml([
                         "class" => "img-fluid ".$options["imageCssClass"],
