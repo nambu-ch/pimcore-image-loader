@@ -68,5 +68,5 @@ Following options are available:
 
 ### Advanced usage
 
-```sizeSelector``` Option can be used to switch from background image to img-tag, set ```isBackgroundImage``` to true and define 
-```sizeSelector => 'd-block d-md-none'```. If so the img-tag is shown on small sizes and a background from md-breakpoint upwards.
+```imageCssClass``` Option can be used to switch from background image to img-tag, set ```isBackgroundImage``` to true and define 
+```imageCssClass => 'd-block d-md-none'```. If so the img-tag is shown on small sizes and a background from md-breakpoint upwards.

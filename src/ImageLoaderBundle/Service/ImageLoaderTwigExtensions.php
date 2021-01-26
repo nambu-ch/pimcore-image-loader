@@ -1,6 +1,8 @@
 <?php
 namespace ImageLoaderBundle\Service;
 
+use Pimcore\Model\DataObject\ClassDefinition;
+use Pimcore\Model\DataObject\Data;
 use Pimcore\Model\Document;
 use Pimcore\Model\Asset;
 use Pimcore\Model\Document\Tag;
@@ -24,7 +26,10 @@ class ImageLoaderTwigExtensions extends \Twig\Extension\AbstractExtension {
         if ($asset instanceof Tag\Image) {
             return $this->imageloaderFromBlock($asset, $options);
         }
-        return 'First Parameter is object of wrong type, must be Pimcore\Model\Asset\Image or Pimcore\Model\Document\Tag\Image.';
+        if ($asset instanceof Data\Hotspotimage) {
+            return $this->imageloaderFromObjectBlock($asset, $options);
+        }
+        return 'First Parameter is object of wrong type, must be Pimcore\Model\Asset\Image, Pimcore\Model\Document\Tag\Image or Pimcore\Model\DataObject\Data\Hotspotimage.';
     }
 
     public function imageloaderFromAsset(Asset\Image $asset, array $options = []) {
@@ -44,6 +49,17 @@ class ImageLoaderTwigExtensions extends \Twig\Extension\AbstractExtension {
         $options["hotspots"] = $imageBlock->getHotspots();
         $options["imageBlock"] = $imageBlock;
         $options["altText"] = $imageBlock->getAlt();
+
+        return $this->imageloaderFromOptions($options);
+    }
+
+    public function imageloaderFromObjectBlock(Data\Hotspotimage $imageBlock, array $options = []) {
+        $emptyImageThumbnail = null;
+        $imageSizes = $this->getImageSizeConfig($imageBlock, $options, $emptyImageThumbnail);
+        $options["imageSizes"] = $imageSizes;
+        $options["emptyImageThumbnail"] = $emptyImageThumbnail;
+        $options["hotspots"] = $imageBlock->getHotspots();
+        $options["imageBlock"] = $imageBlock;
 
         return $this->imageloaderFromOptions($options);
     }
@@ -92,9 +108,9 @@ class ImageLoaderTwigExtensions extends \Twig\Extension\AbstractExtension {
         if (!($options["isBackgroundImage"]) || isset($options["imageCssClass"])) {
             if ($options["emptyImageThumbnail"] instanceof Asset\Image\Thumbnail) {
                 $html[] = $options["emptyImageThumbnail"]->getHtml([
-                        "class" => "img-fluid ".$options["imageCssClass"],
-                        "alt" => $options["altText"] ?? '',
-                    ],
+                    "class" => "img-fluid ".$options["imageCssClass"],
+                    "alt" => $options["altText"] ?? '',
+                ],
                     ["srcset", "width", "height"]
                 );
             } else {
@@ -102,7 +118,7 @@ class ImageLoaderTwigExtensions extends \Twig\Extension\AbstractExtension {
             }
         }
         if (!empty($options["hotspots"])) {
-            $this->getHotspotLinks($options["imageBlock"], $options["hotspots"]);
+            $html[] = $this->getHotspotLinks($options["imageBlock"], $options["hotspots"]);
         }
 
         $html[] = '</div>';
@@ -125,10 +141,12 @@ class ImageLoaderTwigExtensions extends \Twig\Extension\AbstractExtension {
                 continue;
             }
             //
-            if ($imageBlock->getCropTop() != null) {
-                // @todo: works only if the whole image is displayed
-                $area["top"] = ($area["top"] - $imageBlock->getCropTop());
-                $area["left"] = ($area["left"] - $imageBlock->getCropLeft());
+            if ($imageBlock instanceof ClassDefinition\Data\Hotspotimage) {
+                if ($imageBlock->getCropTop() != null) {
+                    // @todo: works only if the whole image is displayed
+                    $area["top"] = ($area["top"] - $imageBlock->getCropTop());
+                    $area["left"] = ($area["left"] - $imageBlock->getCropLeft());
+                }
             }
             $linkEl = null;
             if ($area["data"][0]["value"] instanceof Document\Page) {
