@@ -65,8 +65,15 @@ Following options are available:
 | `widths`            | array   | List of thumbnail widths to override default sizes e.g. ```[ 480, 1024, 1920 ]```                                          |
 | `sizesOptions`      | array   | List of options e.g. ```[ 480 => [ 'size' => 480, 'imageTag' => $view->image('image-480') ]``` ]                           |
 | `altText`           | string  | Alt-Text of the image.                                                                                                     |
+| `thumbnail`         | string  | Thumbnail-Name from Pimcore configuration.                                                                                 |
 
 ### Advanced usage
 
 ```imageCssClass``` Option can be used to switch from background image to img-tag, set ```isBackgroundImage``` to true and define 
 ```imageCssClass => 'd-block d-md-none'```. If so the img-tag is shown on small sizes and a background from md-breakpoint upwards.
+
+### Using thumbnails with media queries
+
+If the option `thumbnail` is set and the configuration has media queries, those are used for loading the image. Media queries are only used with
+their px value. So it doesn't matter if you have set min-with or max-width. It will always use the px as max-width. This option can be
+used together with `isBackgroundImage`, `imageCssClass`, `sizeSelector` and `altText`.

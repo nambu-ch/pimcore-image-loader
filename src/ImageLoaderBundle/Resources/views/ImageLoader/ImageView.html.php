@@ -16,6 +16,7 @@ if ($image instanceof \Pimcore\Model\Asset\Image) {
         "isBackgroundImage" => $view->isBackgroundImage ?? false,
         "imageCssClass"     => $view->imageCssClass,
         "sizesOptions"      => $view->sizesOptions,
+        "thumbnailName"     => $view->thumbnailName,
         "thumbnailNames"    => $view->thumbnailNames,
         "widths"            => $view->widths,
     ]);
@@ -25,6 +26,7 @@ if ($image instanceof \Pimcore\Model\Asset\Image) {
         "isBackgroundImage" => $view->isBackgroundImage ?? false,
         "imageCssClass"     => $view->imageCssClass,
         "sizesOptions"      => $view->sizesOptions,
+        "thumbnailName"     => $view->thumbnailName,
         "thumbnailNames"    => $view->thumbnailNames,
         "widths"            => $view->widths,
     ]);

@@ -24,6 +24,7 @@ var loaderImages = null;
             }
             el.data('sizeSelector', sizeEl);
             el.data('widths', widths);
+            el.addClass('inited');
         });
         loadResponsiveImage();
         window.addEventListener('resize', function() {

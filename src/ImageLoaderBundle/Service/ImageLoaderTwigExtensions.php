@@ -70,6 +70,13 @@ class ImageLoaderTwigExtensions extends \Twig\Extension\AbstractExtension {
         $thumbConfig = (is_array($options["thumbnail"]) ? $options["thumbnail"] : []);
         $widths = (is_array($options["widths"]) ? $options["widths"] : $this->widths);
 
+        if (is_string($options["thumbnail"])) {
+            $thumbnailConfig = Asset\Image\Thumbnail\Config::getByName($options["thumbnail"]);
+            if (count($thumbnailConfig->getMedias()) > 0) {
+                $imageSizes = $this->getImagesByThumbnailMedias($imageElement, $thumbnailConfig);
+                return $imageSizes;
+            }
+        }
         if (is_array($thumbnailNames) && count($thumbnailNames) > 0) {
             foreach ($thumbnailNames as $w => $thumbnailName) {
                 $thumbnail = $imageElement->getThumbnail($thumbnailName);
@@ -172,6 +179,33 @@ class ImageLoaderTwigExtensions extends \Twig\Extension\AbstractExtension {
         }
 
         return join("", $html);
+    }
+
+    private function getImagesByThumbnailMedias($image, $thumbConfig) {
+        $imageSizes = [];
+        $thumb = $image->getThumbnail($thumbConfig, true);
+        $imageSizes[] = $thumb.' 2000';
+
+        foreach ($thumbConfig->getMedias() as $mediaQuery => $config) {
+            $thumb = null;
+            $thumbConfigRes = clone $thumbConfig;
+            $thumbConfigRes->selectMedia($mediaQuery);
+            $thumbConfigRes->setHighResolution(1);
+            $thumb = $image->getThumbnail($thumbConfigRes, true);
+
+            if ($mediaQuery) {
+                if (preg_match('/^[\d]+w$/', $mediaQuery)) {
+                    // we replace the width indicator (400w) out of the name and build a proper media query for max width
+                    $maxWidth = str_replace('w', '', $mediaQuery);
+                    $sourceTagAttributes['media'] = '(max-width: '.$maxWidth.'px)';
+                    $imageSizes[] = $thumb.' '.$maxWidth;
+                } else if (preg_match('/([\d]+)px/', $mediaQuery, $m)) {
+                    $size = $m[1];
+                    $imageSizes[] = $thumb.' '.intval($size);
+                }
+            }
+        }
+        return $imageSizes;
     }
 
 }
