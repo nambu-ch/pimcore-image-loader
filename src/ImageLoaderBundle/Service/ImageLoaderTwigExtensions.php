@@ -64,6 +64,12 @@ class ImageLoaderTwigExtensions extends \Twig\Extension\AbstractExtension {
         return $this->imageloaderFromOptions($options);
     }
 
+    public static function getImageSizes($imageElement, $options) {
+        $instance = new ImageLoaderTwigExtensions();
+        $emptyImageThumbnail = null;
+        return $instance->getImageSizeConfig($imageElement->getImage(), $options, $emptyImageThumbnail);
+    }
+
     private function getImageSizeConfig($imageElement, $options, &$emptyImageThumbnail) {
         $imageSizes = [];
         $thumbnailNames = isset($options["thumbnailNames"]) ? $options["thumbnailNames"] : null;
