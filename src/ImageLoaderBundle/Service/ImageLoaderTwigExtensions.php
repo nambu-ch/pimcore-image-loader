@@ -127,7 +127,8 @@ class ImageLoaderTwigExtensions extends \Twig\Extension\AbstractExtension {
                     ["srcset", "width", "height"]
                 );
             } else {
-                $html[] = '<img class="img-fluid '.$options["imageCssClass"].'" src="'.$options["imageSizes"][0].'" alt="'.($options["altText"] ?? '').'" />';
+                $src = explode(" ", $options["imageSizes"][0]);
+                $html[] = '<img class="img-fluid '.$options["imageCssClass"].'" src="'.$src[0].'" alt="'.($options["altText"] ?? '').'" />';
             }
         }
         if (!empty($options["hotspots"])) {
@@ -190,7 +191,7 @@ class ImageLoaderTwigExtensions extends \Twig\Extension\AbstractExtension {
     private function getImagesByThumbnailMedias($image, $thumbConfig) {
         $imageSizes = [];
         $thumb = $image->getThumbnail($thumbConfig, true);
-        $imageSizes[] = $thumb.' 2000';
+        $imageSizes[2000] = $thumb.' 2000';
 
         foreach ($thumbConfig->getMedias() as $mediaQuery => $config) {
             $thumb = null;
@@ -204,14 +205,15 @@ class ImageLoaderTwigExtensions extends \Twig\Extension\AbstractExtension {
                     // we replace the width indicator (400w) out of the name and build a proper media query for max width
                     $maxWidth = str_replace('w', '', $mediaQuery);
                     $sourceTagAttributes['media'] = '(max-width: '.$maxWidth.'px)';
-                    $imageSizes[] = $thumb.' '.$maxWidth;
+                    $imageSizes[intval($maxWidth)] = $thumb.' '.$maxWidth;
                 } else if (preg_match('/([\d]+)px/', $mediaQuery, $m)) {
                     $size = $m[1];
-                    $imageSizes[] = $thumb.' '.intval($size);
+                    $imageSizes[intval($size)] = $thumb.' '.intval($size);
                 }
             }
         }
-        return $imageSizes;
+        ksort($imageSizes);
+        return array_values($imageSizes);
     }
 
 }
