@@ -11,9 +11,9 @@ class ImageLoaderTwigExtensions extends \Twig\Extension\AbstractExtension {
 
     public function getFunctions() {
         return [
-            new \Twig\TwigFunction('imageloader', [$this, 'imageloader']),
-            new \Twig\TwigFunction('imageloader_asset', [$this, 'imageloaderFromAsset']),
-            new \Twig\TwigFunction('imageloader_block', [$this, 'imageloaderFromBlock']),
+            new \Twig\TwigFunction('imageloader', [$this, 'imageloader'], ['is_safe' => ['html']]),
+            new \Twig\TwigFunction('imageloader_asset', [$this, 'imageloaderFromAsset'], ['is_safe' => ['html']]),
+            new \Twig\TwigFunction('imageloader_block', [$this, 'imageloaderFromBlock'], ['is_safe' => ['html']]),
         ];
     }
 
