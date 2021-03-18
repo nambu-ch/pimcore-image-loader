@@ -1,9 +1,8 @@
 # Pimcore ImageLoaderBundle
+
 Pimcore 5.x/6.x bundle to automate the minification of images inside a webpage.
 
-Automatically generates all needed thumbnails and loads them in relation to the
-width of the surrounding html-element. The smallest image will be loaded as the default.
-Default image sizes are ```[320, 480, 768, 1024, 1280, 1920]```.
+Automatically generates all needed thumbnails and loads them in relation to the width of the surrounding html-element. The smallest image will be loaded as the default. Default image sizes are ```[320, 480, 768, 1024, 1280, 1920]```.
 
 ## Install and Enable
 
@@ -15,9 +14,11 @@ php bin/console pimcore:bundle:enable ImageLoaderBundle
 ## Usage
 
 Load js file inside your layout.
+
 ```php
 $view->headScript()->appendFile('/bundles/imageloader/js/imageloader.js');
 ```
+
 ```twig
 {% do pimcore_head_script().appendFile(asset('/bundles/imageloader/js/imageloader.js')) %}
 ```
@@ -39,6 +40,7 @@ echo $view->template("ImageLoaderBundle:ImageLoader:ImageView.html.php", [
     "image" => $image,
 ]);
 ```
+
 ```twig
 {% if editmode %}
     {{ pimcore_image("image", { width: 300 }) }}
@@ -50,6 +52,21 @@ echo $view->template("ImageLoaderBundle:ImageLoader:ImageView.html.php", [
 // or
 {% set asset = pimcore_asset(2) %}
 {{ imageloader(asset, { options... })|raw }}
+```
+
+### Force imageloader to recalculate
+
+The imageloader listens to the window resize event and automaticaly loads the best image, but sometimes images appear and need an manual recalculation of the best image size, for example when an accordion opens. In combination with the bootstrap event, this is done like this:
+
+```js
+$('.accordion-collapse').on('show.bs.collapse', function () {
+    var images = $(this).find(".image-loader");
+    setTimeout(function () {
+        images.imageLoader('onResized');
+    }, 1);
+}).on('shown.bs.collapse', function () {
+    $(this).find(".image-loader").imageLoader('onResized');
+});
 ```
 
 ### Available options
@@ -69,11 +86,9 @@ Following options are available:
 
 ### Advanced usage
 
-```imageCssClass``` Option can be used to switch from background image to img-tag, set ```isBackgroundImage``` to true and define 
+```imageCssClass``` Option can be used to switch from background image to img-tag, set ```isBackgroundImage``` to true and define
 ```imageCssClass => 'd-block d-md-none'```. If so the img-tag is shown on small sizes and a background from md-breakpoint upwards.
 
 ### Using thumbnails with media queries
 
-If the option `thumbnail` is set and the configuration has media queries, those are used for loading the image. Media queries are only used with
-their px value. So it doesn't matter if you have set min-with or max-width. It will always use the px as max-width. This option can be
-used together with `isBackgroundImage`, `imageCssClass`, `sizeSelector` and `altText`.
+If the option `thumbnail` is set and the configuration has media queries, those are used for loading the image. Media queries are only used with their px value. So it doesn't matter if you have set min-with or max-width. It will always use the px as max-width. This option can be used together with `isBackgroundImage`, `imageCssClass`, `sizeSelector` and `altText`.
