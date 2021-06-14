@@ -36,7 +36,7 @@ class ImageLoaderTwigExtensions extends \Twig\Extension\AbstractExtension {
         $emptyImageThumbnail = null;
         $imageSizes = $this->getImageSizeConfig($asset, $options, $emptyImageThumbnail);
         $options["imageSizes"] = $imageSizes;
-        $options["emptyImageThumbnail"] = $emptyImageThumbnail;
+        $options["emptyImageThumbnail"] = $options["emptyImageThumbnail"] ?? $emptyImageThumbnail;
 
         return $this->imageloaderFromOptions($options);
     }
@@ -45,7 +45,7 @@ class ImageLoaderTwigExtensions extends \Twig\Extension\AbstractExtension {
         $emptyImageThumbnail = null;
         $imageSizes = $this->getImageSizeConfig($imageBlock, $options, $emptyImageThumbnail);
         $options["imageSizes"] = $imageSizes;
-        $options["emptyImageThumbnail"] = $emptyImageThumbnail;
+        $options["emptyImageThumbnail"] = $options["emptyImageThumbnail"] ?? $emptyImageThumbnail;
         $options["hotspots"] = $imageBlock->getHotspots();
         $options["imageBlock"] = $imageBlock;
         $options["altText"] = $imageBlock->getAlt();
@@ -57,7 +57,7 @@ class ImageLoaderTwigExtensions extends \Twig\Extension\AbstractExtension {
         $emptyImageThumbnail = null;
         $imageSizes = $this->getImageSizeConfig($imageBlock, $options, $emptyImageThumbnail);
         $options["imageSizes"] = $imageSizes;
-        $options["emptyImageThumbnail"] = $emptyImageThumbnail;
+        $options["emptyImageThumbnail"] = $options["emptyImageThumbnail"] ?? $emptyImageThumbnail;
         $options["hotspots"] = $imageBlock->getHotspots();
         $options["imageBlock"] = $imageBlock;
 
@@ -126,6 +126,8 @@ class ImageLoaderTwigExtensions extends \Twig\Extension\AbstractExtension {
                 ],
                     ["srcset", "width", "height"]
                 );
+            } elseif (!empty($options["emptyImageThumbnail"])) {
+                $html[] = '<img class="img-fluid '.$options["imageCssClass"].'" src="'.$options["emptyImageThumbnail"].'" alt="'. $options["altText"].'" />';
             } else {
                 $src = explode(" ", $options["imageSizes"][0]);
                 $html[] = '<img class="img-fluid '.$options["imageCssClass"].'" src="'.$src[0].'" alt="'.($options["altText"] ?? '').'" />';
