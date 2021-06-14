@@ -84,7 +84,7 @@ Following options are available:
 | `altText`             | string                 | Alt-Text of the image.                                                                                                     |
 | `thumbnail`           | string                 | Thumbnail-Name from Pimcore configuration.                                                                                 |
 | `emptyImageThumbnail` | string or Asset\Image  | Path to an Image or a Pimcore Asset\Image which is shown at start before imageloader determines the fitting thumbnail      |
-| `lazyLoad`            | boolean                | Enably lazy loading via IntersectionObserver                                                                               |
+| `lazyLoad`            | boolean                | Enable lazy loading via IntersectionObserver                                                                               |
 
 ### Advanced usage
 
