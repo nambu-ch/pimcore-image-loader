@@ -21,7 +21,19 @@
             this._widths = widths;
             this.element.addClass('inited');
         }
-        this.onResized();
+        if (this.element.is('[data-lazyload]')) {
+            var $this = this;
+            var imageObserver = new IntersectionObserver(function (entries, observer) {
+                entries.forEach(function (entry) {
+                    if (entry.isIntersecting) {
+                        $this.onResized();
+                    }
+                });
+            });
+            imageObserver.observe(element);
+        } else {
+            this.onResized();
+        }
     };
 
     ImageLoader.prototype = {

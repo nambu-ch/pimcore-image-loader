@@ -83,7 +83,8 @@ Following options are available:
 | `sizesOptions`        | array                  | List of options e.g. ```[ 480 => [ 'size' => 480, 'imageTag' => $view->image('image-480') ]``` ]                           |
 | `altText`             | string                 | Alt-Text of the image.                                                                                                     |
 | `thumbnail`           | string                 | Thumbnail-Name from Pimcore configuration.                                                                                 |
-| `emptyImageThumbnail` | string or Asset\Image  | Path to an Image or a Pimcore Asset\Image which is shown at start before imageloaded determines the fitting thumbnail      |
+| `emptyImageThumbnail` | string or Asset\Image  | Path to an Image or a Pimcore Asset\Image which is shown at start before imageloader determines the fitting thumbnail      |
+| `lazyLoad`            | boolean                | Enably lazy loading via IntersectionObserver                                                                               |
 
 ### Advanced usage
 

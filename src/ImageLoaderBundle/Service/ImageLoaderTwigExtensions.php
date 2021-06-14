@@ -116,6 +116,7 @@ class ImageLoaderTwigExtensions extends \Twig\Extension\AbstractExtension {
         }
         $html[] = ' data-loader="'.join(",", $options["imageSizes"]).'"';
         $html[] = (($options["isBackgroundImage"]) ? ' data-loader-bg="true"' : '').'';
+        $html[] = (($options["lazyLoad"]) ? ' data-lazyload="true"' : '').'';
         $html[] = '>';
 
         if (!($options["isBackgroundImage"]) || isset($options["imageCssClass"])) {
