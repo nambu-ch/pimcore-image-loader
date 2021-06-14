@@ -27,6 +27,7 @@
                 entries.forEach(function (entry) {
                     if (entry.isIntersecting) {
                         $this.onResized();
+                        imageObserver.unobserve(entry.target);
                     }
                 });
             });
