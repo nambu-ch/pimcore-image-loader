@@ -2,7 +2,7 @@
   "name": "nambu-ch/pimcore-image-loader",
   "type": "pimcore-bundle",
   "license": "GPL-3.0+",
-  "description": "Pimcore 5.x Load images depending on box size",
+  "description": "Pimcore 5.x/6.x Load images depending on box size",
   "keywords": ["pimcore", "image"],
   "homepage": "https://github.com/nambu-ch/pimcore-image-loader",
   "authors": [
@@ -26,5 +26,6 @@
     }
   },
   "require": {
+    "pimcore/pimcore": "^5.0 || ^6.0"
   }
 }
