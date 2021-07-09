@@ -9,7 +9,7 @@ use Pimcore\Model\Document\Tag;
 
 class ImageLoaderTwigExtensions extends \Twig\Extension\AbstractExtension {
 
-    private $widths = [320, 480, 768, 1024, 1280, 1920];
+    private $widths = [375, 578, 768, 992, 1400, 1920];
 
     public function getFunctions() {
         return [
@@ -20,6 +20,7 @@ class ImageLoaderTwigExtensions extends \Twig\Extension\AbstractExtension {
     }
 
     public function imageloader($asset, array $options = []) {
+        if (!isset($options["thumbnail"])) return "Thumbnail Option must be set!";
         if ($asset instanceof Asset\Image) {
             return $this->imageloaderFromAsset($asset, $options);
         }
@@ -73,8 +74,8 @@ class ImageLoaderTwigExtensions extends \Twig\Extension\AbstractExtension {
     private function getImageSizeConfig($imageElement, $options, &$emptyImageThumbnail) {
         $imageSizes = [];
         $thumbnailNames = isset($options["thumbnailNames"]) ? $options["thumbnailNames"] : null;
-        $thumbConfig = (is_array($options["thumbnail"]) ? $options["thumbnail"] : []);
-        $widths = (is_array($options["widths"]) ? $options["widths"] : $this->widths);
+        $thumbConfig = (isset($options["thumbnail"]) && is_array($options["thumbnail"]) ? $options["thumbnail"] : []);
+        $widths = (isset($options["widths"]) && is_array($options["widths"]) ? $options["widths"] : $this->widths);
 
         if (is_string($options["thumbnail"])) {
             $thumbnailConfig = Asset\Image\Thumbnail\Config::getByName($options["thumbnail"]);
@@ -116,22 +117,24 @@ class ImageLoaderTwigExtensions extends \Twig\Extension\AbstractExtension {
         }
         $html[] = ' data-loader="'.join(",", $options["imageSizes"]).'"';
         $html[] = (($options["isBackgroundImage"]) ? ' data-loader-bg="true"' : '').'';
-        $html[] = (($options["lazyLoad"]) ? ' data-lazyload="true"' : '').'';
+        $html[] = ((isset($options["lazyLoad"]) && $options["lazyLoad"]) ? ' data-lazyload="true"' : '').'';
         $html[] = '>';
 
         if (!($options["isBackgroundImage"]) || isset($options["imageCssClass"])) {
             if ($options["emptyImageThumbnail"] instanceof Asset\Image\Thumbnail) {
-                $html[] = $options["emptyImageThumbnail"]->getHtml([
-                    "class" => "img-fluid ".$options["imageCssClass"],
-                    "alt" => $options["altText"] ?? '',
+                $html[] = $options["emptyImageThumbnail"]->getImageTag([
+                    "imgAttributes" => [
+                        "class" => "img-fluid".(isset($options["imageCssClass"]) ? " ".$options["imageCssClass"] : ""),
+                    ],
+                    "alt"   => $options["altText"] ?? '',
                 ],
                     ["srcset", "width", "height"]
                 );
             } elseif (!empty($options["emptyImageThumbnail"])) {
-                $html[] = '<img class="img-fluid '.$options["imageCssClass"].'" src="'.$options["emptyImageThumbnail"].'" alt="'. $options["altText"].'" />';
+                $html[] = '<img class="img-fluid'.(isset($options["imageCssClass"]) ? " ".$options["imageCssClass"] : "").'" src="'.$options["emptyImageThumbnail"].'" alt="'.$options["altText"].'" />';
             } else {
                 $src = explode(" ", $options["imageSizes"][0]);
-                $html[] = '<img class="img-fluid '.$options["imageCssClass"].'" src="'.$src[0].'" alt="'.($options["altText"] ?? '').'" />';
+                $html[] = '<img class="img-fluid'.(isset($options["imageCssClass"]) ? " ".$options["imageCssClass"] : "").'" src="'.$src[0].'" alt="'.($options["altText"] ?? '').'" />';
             }
         }
         if (!empty($options["hotspots"])) {

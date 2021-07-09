@@ -1,6 +1,6 @@
 # Pimcore ImageLoaderBundle
 
-Pimcore 5.x/6.x bundle to automate the minification of images inside a webpage.
+Pimcore 10.x bundle to automate the minification of images inside a webpage.
 
 Automatically generates all needed thumbnails and loads them in relation to the width of the surrounding html-element. The smallest image will be loaded as the default. Default image sizes are ```[320, 480, 768, 1024, 1280, 1920]```.
 
@@ -9,6 +9,19 @@ Automatically generates all needed thumbnails and loads them in relation to the 
 ```bash
 composer require nambu-ch/pimcore-image-loader
 php bin/console pimcore:bundle:enable ImageLoaderBundle
+```
+
+## Dependencies
+This library needs Bootstrap and jQuery to work.
+
+### Get rid of bootstrap
+As an easy fix you can add the following css definition to your own style, so you don't need to include bootstrap:
+
+```css
+.img-fluid {
+    max-width: 100%;
+    height: auto;
+}
 ```
 
 ## Usage
@@ -24,22 +37,6 @@ $view->headScript()->appendFile('/bundles/imageloader/js/imageloader.js');
 ```
 
 ### Example
-
-```php
-$imageBlock = $view->image("image");
-if ($editmode) {
-    echo $imageBlock;
-} else {
-    echo $view->template("ImageLoaderBundle:ImageLoader:ImageView.html.php", [
-        "image" => $imageBlock,
-    ]);
-}
-// or
-$image = Asset::getById(2);
-echo $view->template("ImageLoaderBundle:ImageLoader:ImageView.html.php", [
-    "image" => $image,
-]);
-```
 
 ```twig
 {% if editmode %}
