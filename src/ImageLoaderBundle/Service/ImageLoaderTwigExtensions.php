@@ -79,7 +79,7 @@ class ImageLoaderTwigExtensions extends \Twig\Extension\AbstractExtension {
 
         if (is_string($options["thumbnail"])) {
             $thumbnailConfig = Asset\Image\Thumbnail\Config::getByName($options["thumbnail"]);
-            if ($thumbnailConfig != null && count($thumbnailConfig->getMedias()) > 0) {
+            if ($thumbnailConfig != null) {
                 $imageSizes = $this->getImagesByThumbnailMedias($imageElement, $thumbnailConfig);
                 return $imageSizes;
             }
