@@ -5,7 +5,7 @@ use Pimcore\Model\DataObject\ClassDefinition;
 use Pimcore\Model\DataObject\Data;
 use Pimcore\Model\Document;
 use Pimcore\Model\Asset;
-use Pimcore\Model\Document\Tag;
+use Pimcore\Model\Document\Editable;
 
 class ImageLoaderTwigExtensions extends \Twig\Extension\AbstractExtension {
 
@@ -24,13 +24,13 @@ class ImageLoaderTwigExtensions extends \Twig\Extension\AbstractExtension {
         if ($asset instanceof Asset\Image) {
             return $this->imageloaderFromAsset($asset, $options);
         }
-        if ($asset instanceof Tag\Image) {
+        if ($asset instanceof Editable\Image) {
             return $this->imageloaderFromBlock($asset, $options);
         }
         if ($asset instanceof Data\Hotspotimage) {
             return $this->imageloaderFromObjectBlock($asset, $options);
         }
-        return 'First Parameter is object of wrong type, must be Pimcore\Model\Asset\Image, Pimcore\Model\Document\Tag\Image or Pimcore\Model\DataObject\Data\Hotspotimage.';
+        return 'First Parameter is object of wrong type, must be Pimcore\Model\Asset\Image, Pimcore\Model\Document\Editable\Image or Pimcore\Model\DataObject\Data\Hotspotimage.';
     }
 
     public function imageloaderFromAsset(Asset\Image $asset, array $options = []) {
@@ -42,7 +42,7 @@ class ImageLoaderTwigExtensions extends \Twig\Extension\AbstractExtension {
         return $this->imageloaderFromOptions($options);
     }
 
-    public function imageloaderFromBlock(Tag\Image $imageBlock, array $options = []) {
+    public function imageloaderFromBlock(Editable\Image $imageBlock, array $options = []) {
         $emptyImageThumbnail = null;
         $imageSizes = $this->getImageSizeConfig($imageBlock, $options, $emptyImageThumbnail);
         $options["imageSizes"] = $imageSizes;
