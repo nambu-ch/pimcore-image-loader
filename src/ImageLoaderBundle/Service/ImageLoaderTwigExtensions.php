@@ -20,7 +20,6 @@ class ImageLoaderTwigExtensions extends \Twig\Extension\AbstractExtension {
     }
 
     public function imageloader($asset, array $options = []) {
-        if (!isset($options["thumbnail"])) return "Thumbnail Option must be set!";
         if ($asset instanceof Asset\Image) {
             return $this->imageloaderFromAsset($asset, $options);
         }
@@ -77,7 +76,7 @@ class ImageLoaderTwigExtensions extends \Twig\Extension\AbstractExtension {
         $thumbConfig = (isset($options["thumbnail"]) && is_array($options["thumbnail"]) ? $options["thumbnail"] : []);
         $widths = (isset($options["widths"]) && is_array($options["widths"]) ? $options["widths"] : $this->widths);
 
-        if (is_string($options["thumbnail"])) {
+        if (isset($options["thumbnail"])) {
             $thumbnailConfig = Asset\Image\Thumbnail\Config::getByName($options["thumbnail"]);
             if ($thumbnailConfig != null) {
                 $imageSizes = $this->getImagesByThumbnailMedias($imageElement, $thumbnailConfig);
