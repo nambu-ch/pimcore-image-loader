@@ -66,6 +66,17 @@ $('.accordion-collapse').on('show.bs.collapse', function () {
 });
 ```
 
+### Cache Buster
+
+CacheBuster is enabled to all images by default. It takes the modification date of the image asset to refresh cache if needed.
+It can be disabled with an option available inside the twig function. To disable CacheBuster globally you can use yml configuration as follows.
+
+```
+image_loader:
+  cache_buster:
+    disabled: true
+```
+
 ### Available options
 
 Following options are available:
@@ -82,6 +93,7 @@ Following options are available:
 | `thumbnail`           | string                 | Thumbnail-Name from Pimcore configuration.                                                                                 |
 | `emptyImageThumbnail` | string or Asset\Image  | Path to an Image or a Pimcore Asset\Image which is shown at start before imageloader determines the fitting thumbnail      |
 | `lazyLoad`            | boolean                | Enable lazy loading via IntersectionObserver                                                                               |
+| `disableCacheBuster`  | boolean                | Disable Cache Buster
 
 ### Advanced usage
 
