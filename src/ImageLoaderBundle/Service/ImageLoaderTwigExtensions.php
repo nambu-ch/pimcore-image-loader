@@ -94,6 +94,7 @@ class ImageLoaderTwigExtensions extends \Twig\Extension\AbstractExtension {
                 if (is_null($emptyImageThumbnail)) $emptyImageThumbnail = $thumbnail;
                 $imageSizes[] = [
                     'image' => $this->getThumbnailPath($thumbnail, $options, $cacheBusterTs).' '.$w,
+                    'size' => $thumbnail->getWidth().'/'.$thumbnail->getHeight().' '.$w,
                 ];
             }
         } else {
@@ -104,12 +105,14 @@ class ImageLoaderTwigExtensions extends \Twig\Extension\AbstractExtension {
                     if (is_null($emptyImageThumbnail)) $emptyImageThumbnail = $thumbnail;
                     $imageSizes[] = [
                         'image' => $this->getThumbnailPath($thumbnail, $options, $cacheBusterTs).' '.$w,
+                        'size' => $thumbnail->getWidth().'/'.$thumbnail->getHeight().' '.$w,
                     ];
                 } else {
                     $thumbnail = $imageElement->getThumbnail($this->getThumbnailConfig($thumbConfig, $w));
                     if (is_null($emptyImageThumbnail)) $emptyImageThumbnail = $thumbnail;
                     $imageSizes[] = [
                         'image' => $this->getThumbnailPath($thumbnail, $options, $cacheBusterTs).' '.$w,
+                        'size' => $thumbnail->getWidth().'/'.$thumbnail->getHeight().' '.$w,
                     ];
                 }
             }
