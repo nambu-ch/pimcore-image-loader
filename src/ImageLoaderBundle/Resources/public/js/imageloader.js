@@ -13,12 +13,20 @@
                 var w = parseInt(params[1]);
                 widths[w] = params[0];
             }
+            var imgSizes = (this.element.attr('data-sizes') ?? '').split(",");
+            var sizes = {};
+            for (var i = 0; i < imgSizes.length; i++) {
+                var params = imgSizes[i].split(" ");
+                var w = parseInt(params[1]);
+                sizes[w] = params[0].split("/");
+            }
             var sizeEl = (this.element.is('[data-sizeSelector]')) ? this.element.closest(this.element.attr('data-sizeSelector')) : this.element;
             if (this.element.is('[data-sizeSelectorAbs]')) {
                 sizeEl = $(this.element.attr('data-sizeSelectorAbs'));
             }
             this._sizeSelector = sizeEl;
             this._widths = widths;
+            this._sizes = sizes;
             this.element.addClass('inited');
         }
         if (this.element.is('[data-lazyload]')) {
@@ -72,6 +80,7 @@
         changeImage: function (width, asBackground) {
             var imageEl = this.element;
             var widths = this._widths;
+            var sizes = this._sizes;
             if (asBackground) {
                 if (imageEl.css('background-image') !== 'url(' + widths[width] + ')') {
                     imageEl.css('background-image', 'url(' + widths[width] + ')');
@@ -80,7 +89,12 @@
             } else {
                 var hasChangedImg = imageEl.find('>img').attr('src') !== widths[width];
                 if (hasChangedImg) {
-                    imageEl.find('>img').attr('src', widths[width]);
+                    var imgEl = imageEl.find('>img');
+                    imgEl.attr('src', widths[width]);
+                    if (imageEl.is('[data-sizes]')) {
+                        imgEl.attr('width', sizes[width][0]);
+                        imgEl.attr('height', sizes[width][1]);
+                    }
                     return true;
                 }
             }
