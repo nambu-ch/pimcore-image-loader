@@ -36,6 +36,8 @@ $view->headScript()->appendFile('/bundles/imageloader/js/imageloader.js');
 {% do pimcore_head_script().appendFile(asset('/bundles/imageloader/js/imageloader.js')) %}
 ```
 
+There is now a version without the dependency of jquery at ``/bundles/imageloader/js/imageloader-vanilla.js``.
+
 ### Example
 
 ```twig
@@ -81,19 +83,20 @@ image_loader:
 
 Following options are available:
 
-| Name                  | Type                   | Description                                                                                                                |
-|-----------------------|------------------------|----------------------------------------------------------------------------------------------------------------------------|
-| `isBackgroundImage`   | boolean                | Set to true to load image as css background, instead of img-tag.                                                           |
-| `imageCssClass`       | string                 | A CSS class to apply to the image.                                                                                         |
-| `thumbnailNames`      | array                  | List of size => thumbnail-names to generate the different sizes. e.g. ```[ 320 => 'thumb-small', 1024 => 'thumb-big' ]```  |
-| `sizeSelector`        | string                 | jQuery CSS selector to a html element which will be used for determining the size. e.g. '.some-element'                    |
-| `widths`              | array                  | List of thumbnail widths to override default sizes e.g. ```[ 480, 1024, 1920 ]```                                          |
-| `sizesOptions`        | array                  | List of options e.g. ```[ 480 => [ 'size' => 480, 'imageTag' => $view->image('image-480') ]``` ]                           |
-| `altText`             | string                 | Alt-Text of the image.                                                                                                     |
-| `thumbnail`           | string                 | Thumbnail-Name from Pimcore configuration.                                                                                 |
-| `emptyImageThumbnail` | string or Asset\Image  | Path to an Image or a Pimcore Asset\Image which is shown at start before imageloader determines the fitting thumbnail      |
-| `lazyLoad`            | boolean                | Enable lazy loading via IntersectionObserver                                                                               |
-| `disableCacheBuster`  | boolean                | Disable Cache Buster
+| Name                  | Type                   | Description                                                                                                               |
+|-----------------------|------------------------|---------------------------------------------------------------------------------------------------------------------------|
+| `isBackgroundImage`   | boolean                | Set to true to load image as css background, instead of img-tag.                                                          |
+| `imageCssClass`       | string                 | A CSS class to apply to the image.                                                                                        |
+| `thumbnailNames`      | array                  | List of size => thumbnail-names to generate the different sizes. e.g. ```[ 320 => 'thumb-small', 1024 => 'thumb-big' ]``` |
+| `sizeSelector`        | string                 | jQuery CSS selector to a html element which will be used for determining the size. e.g. '.some-element'                   |
+| `widths`              | array                  | List of thumbnail widths to override default sizes e.g. ```[ 480, 1024, 1920 ]```                                         |
+| `sizesOptions`        | array                  | List of options e.g. ```[ 480 => [ 'size' => 480, 'imageTag' => $view->image('image-480') ]``` ]                          |
+| `altText`             | string                 | Alt-Text of the image.                                                                                                    |
+| `setImageSize`        | boolean                | Set width and height attributes on img element.                                                                           |
+| `thumbnail`           | string                 | Thumbnail-Name from Pimcore configuration.                                                                                |
+| `emptyImageThumbnail` | string or Asset\Image  | Path to an Image or a Pimcore Asset\Image which is shown at start before imageloader determines the fitting thumbnail     |
+| `lazyLoad`            | boolean                | Enable lazy loading via IntersectionObserver                                                                              |
+| `disableCacheBuster`  | boolean                | Disable Cache Buster                                                                                                      |
 
 ### Advanced usage
 

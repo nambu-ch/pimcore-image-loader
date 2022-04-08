@@ -92,7 +92,9 @@ class ImageLoaderTwigExtensions extends \Twig\Extension\AbstractExtension {
             foreach ($thumbnailNames as $w => $thumbnailName) {
                 $thumbnail = $imageElement->getThumbnail($thumbnailName);
                 if (is_null($emptyImageThumbnail)) $emptyImageThumbnail = $thumbnail;
-                $imageSizes[] = $this->getThumbnailPath($thumbnail, $options, $cacheBusterTs).' '.$w;
+                $imageSizes[] = [
+                    'image' => $this->getThumbnailPath($thumbnail, $options, $cacheBusterTs).' '.$w,
+                ];
             }
         } else {
             foreach ($widths as $w) {
@@ -100,11 +102,15 @@ class ImageLoaderTwigExtensions extends \Twig\Extension\AbstractExtension {
                     $image = $sizesOptions[$w]['imageTag'];
                     $thumbnail = $image->getThumbnail($this->getThumbnailConfig($thumbConfig, $w));
                     if (is_null($emptyImageThumbnail)) $emptyImageThumbnail = $thumbnail;
-                    $imageSizes[] = $this->getThumbnailPath($thumbnail, $options, $cacheBusterTs).' '.$w;
+                    $imageSizes[] = [
+                        'image' => $this->getThumbnailPath($thumbnail, $options, $cacheBusterTs).' '.$w,
+                    ];
                 } else {
                     $thumbnail = $imageElement->getThumbnail($this->getThumbnailConfig($thumbConfig, $w));
                     if (is_null($emptyImageThumbnail)) $emptyImageThumbnail = $thumbnail;
-                    $imageSizes[] = $this->getThumbnailPath($thumbnail, $options, $cacheBusterTs).' '.$w;
+                    $imageSizes[] = [
+                        'image' => $this->getThumbnailPath($thumbnail, $options, $cacheBusterTs).' '.$w,
+                    ];
                 }
             }
         }
@@ -119,7 +125,16 @@ class ImageLoaderTwigExtensions extends \Twig\Extension\AbstractExtension {
         if (isset($options["sizeSelector"]) && !empty($options["sizeSelector"])) {
             $html[] = ' data-sizeSelector="'.$options["sizeSelector"].'"';
         }
-        $html[] = ' data-loader="'.join(",", $options["imageSizes"]).'"';
+        $imgPaths = [];
+        $imgSizes = [];
+        foreach ($options["imageSizes"] as $size => $item) {
+            $imgPaths[] = $item["image"];
+            $imgSizes[] = $item["size"];
+        }
+        $html[] = ' data-loader="'.join(",", $imgPaths).'"';
+        if ($options["setImageSize"] ?? false) {
+            $html[] = ' data-sizes="'.join(",", $imgSizes).'"';
+        }
         $html[] = (($options["isBackgroundImage"]) ? ' data-loader-bg="true"' : '').'';
         $html[] = ((isset($options["lazyLoad"]) && $options["lazyLoad"]) ? ' data-lazyload="true"' : '').'';
         $html[] = '>';
@@ -137,7 +152,7 @@ class ImageLoaderTwigExtensions extends \Twig\Extension\AbstractExtension {
             } elseif (!empty($options["emptyImageThumbnail"])) {
                 $html[] = '<img class="img-fluid'.(isset($options["imageCssClass"]) ? " ".$options["imageCssClass"] : "").'" src="'.$options["emptyImageThumbnail"].'" alt="'.$options["altText"].'" />';
             } else {
-                $src = explode(" ", $options["imageSizes"][0]);
+                $src = explode(" ", $options["imageSizes"][0]["image"]);
                 $html[] = '<img class="img-fluid'.(isset($options["imageCssClass"]) ? " ".$options["imageCssClass"] : "").'" src="'.$src[0].'" alt="'.($options["altText"] ?? '').'" />';
             }
         }
@@ -201,7 +216,10 @@ class ImageLoaderTwigExtensions extends \Twig\Extension\AbstractExtension {
     private function getImagesByThumbnailMedias($image, $thumbConfig, array $options, $cacheBusterTs = null) {
         $imageSizes = [];
         $thumb = $image->getThumbnail($thumbConfig, true);
-        $imageSizes[2000] = $this->getThumbnailPath($thumb, $options, $cacheBusterTs).' 2000';
+        $imageSizes[2000] = [
+            'image' => $this->getThumbnailPath($thumb, $options, $cacheBusterTs).' 2000',
+            'size' => $thumb->getWidth().'/'.$thumb->getHeight().' 2000',
+        ];
 
         foreach ($thumbConfig->getMedias() as $mediaQuery => $config) {
             $thumb = null;
@@ -215,10 +233,16 @@ class ImageLoaderTwigExtensions extends \Twig\Extension\AbstractExtension {
                     // we replace the width indicator (400w) out of the name and build a proper media query for max width
                     $maxWidth = str_replace('w', '', $mediaQuery);
                     $sourceTagAttributes['media'] = '(max-width: '.$maxWidth.'px)';
-                    $imageSizes[intval($maxWidth)] = $this->getThumbnailPath($thumb, $options, $cacheBusterTs).' '.$maxWidth;
+                    $imageSizes[intval($maxWidth)] = [
+                        'image' => $this->getThumbnailPath($thumb, $options, $cacheBusterTs).' '.$maxWidth,
+                        'size' => $thumb->getWidth().'/'.$thumb->getHeight().' '.$maxWidth,
+                    ];
                 } else if (preg_match('/([\d]+)px/', $mediaQuery, $m)) {
                     $size = $m[1];
-                    $imageSizes[intval($size)] = $this->getThumbnailPath($thumb, $options, $cacheBusterTs).' '.intval($size);
+                    $imageSizes[intval($size)] = [
+                        'image' => $this->getThumbnailPath($thumb, $options, $cacheBusterTs).' '.intval($size),
+                        'size' => $thumb->getWidth().'/'.$thumb->getHeight().' '.intval($size),
+                    ];
                 }
             }
         }
