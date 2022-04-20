@@ -75,7 +75,7 @@ class ImageLoaderTwigExtensions extends \Twig\Extension\AbstractExtension {
         return $instance->getImageSizeConfig($imageElement->getImage(), $options, $emptyImageThumbnail);
     }
 
-    private function getImageSizeConfig($imageElement, $options, &$emptyImageThumbnail, $cacheBusterTs = null) {
+    protected function getImageSizeConfig($imageElement, $options, &$emptyImageThumbnail, $cacheBusterTs = null) {
         $imageSizes = [];
         $thumbnailNames = $options["thumbnailNames"] ?? null;
         $thumbConfig = $options["thumbnail"] ?? [];
@@ -121,7 +121,7 @@ class ImageLoaderTwigExtensions extends \Twig\Extension\AbstractExtension {
         return $imageSizes;
     }
 
-    private function imageloaderFromOptions(array $options) {
+    protected function imageloaderFromOptions(array $options) {
         if (!isset($options["isBackgroundImage"])) $options["isBackgroundImage"] = false;
 
         $html = ['<div style="position:relative;overflow:hidden;" class="image-loader"'];
@@ -168,7 +168,7 @@ class ImageLoaderTwigExtensions extends \Twig\Extension\AbstractExtension {
         return join("", $html);
     }
 
-    private function getThumbnailConfig(array $baseConfig, $width) {
+    protected function getThumbnailConfig(array $baseConfig, $width) {
         $cfg = array_merge($baseConfig, ["width" => $width]);
         if (array_key_exists("height", $cfg)) {
             $cfg["height"] = $width;
@@ -176,7 +176,7 @@ class ImageLoaderTwigExtensions extends \Twig\Extension\AbstractExtension {
         return $cfg;
     }
 
-    private function getHotspotLinks($imageBlock, $hotspots) {
+    protected function getHotspotLinks($imageBlock, $hotspots) {
         $html = [];
         foreach ($hotspots as $area) {
             if (count($area["data"]) != 1) {
@@ -216,7 +216,7 @@ class ImageLoaderTwigExtensions extends \Twig\Extension\AbstractExtension {
         return join("", $html);
     }
 
-    private function getImagesByThumbnailMedias($image, $thumbConfig, array $options, $cacheBusterTs = null) {
+    protected function getImagesByThumbnailMedias($image, $thumbConfig, array $options, $cacheBusterTs = null) {
         $imageSizes = [];
         $thumb = $image->getThumbnail($thumbConfig, true);
         $imageSizes[2000] = [
@@ -253,7 +253,7 @@ class ImageLoaderTwigExtensions extends \Twig\Extension\AbstractExtension {
         return array_values($imageSizes);
     }
 
-    private function getThumbnailPath($thumbnailPath, array $options, $cacheBusterTs = null) {
+    protected function getThumbnailPath($thumbnailPath, array $options, $cacheBusterTs = null) {
         if ($this->disableCacheBuster === true || (isset($options["disableCacheBuster"]) && $options["disableCacheBuster"] === true)) {
             return $thumbnailPath;
         }
