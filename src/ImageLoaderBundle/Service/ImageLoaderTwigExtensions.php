@@ -42,6 +42,7 @@ class ImageLoaderTwigExtensions extends \Twig\Extension\AbstractExtension {
         $imageSizes = $this->getImageSizeConfig($asset, $options, $emptyImageThumbnail, $asset->getModificationDate());
         $options["imageSizes"] = $imageSizes;
         $options["emptyImageThumbnail"] = $options["emptyImageThumbnail"] ?? $emptyImageThumbnail;
+        $options["objectPosition"] = $this->getImageObjectPosition($asset);
 
         return $this->imageloaderFromOptions($options);
     }
@@ -54,6 +55,7 @@ class ImageLoaderTwigExtensions extends \Twig\Extension\AbstractExtension {
         $options["hotspots"] = $imageBlock->getHotspots();
         $options["imageBlock"] = $imageBlock;
         $options["altText"] = $imageBlock->getAlt();
+        $options["objectPosition"] = $this->getImageObjectPosition($imageBlock->getImage());
 
         return $this->imageloaderFromOptions($options);
     }
@@ -65,8 +67,28 @@ class ImageLoaderTwigExtensions extends \Twig\Extension\AbstractExtension {
         $options["emptyImageThumbnail"] = $options["emptyImageThumbnail"] ?? $emptyImageThumbnail;
         $options["hotspots"] = $imageBlock->getHotspots();
         $options["imageBlock"] = $imageBlock;
+        $options["objectPosition"] = $this->getImageObjectPosition($imageBlock->getImage());
 
         return $this->imageloaderFromOptions($options);
+    }
+
+    protected function getImageObjectPosition(Asset\Image $asset) {
+        $focalPointY = $asset->getCustomSetting("focalPointY");
+        $focalPointX = $asset->getCustomSetting("focalPointX");
+        if (empty($focalPointY) && empty($focalPointX)) return null;
+
+        if (empty($focalPointY)) {
+            $focalPointY = "center";
+        } else {
+            $focalPointY = round($focalPointY, 1)."%";
+        }
+        if (empty($focalPointX)) {
+            $focalPointX = "center";
+        } else {
+            $focalPointX = round($focalPointX, 1)."%";
+        }
+
+        return $focalPointX." ".$focalPointY;
     }
 
     public static function getImageSizes($imageElement, $options) {
@@ -153,10 +175,10 @@ class ImageLoaderTwigExtensions extends \Twig\Extension\AbstractExtension {
                     ["srcset", "width", "height"]
                 );
             } elseif (!empty($options["emptyImageThumbnail"])) {
-                $html[] = '<img class="img-fluid'.(isset($options["imageCssClass"]) ? " ".$options["imageCssClass"] : "").'" src="'.$options["emptyImageThumbnail"].'" alt="'.$options["altText"].'" />';
+                $html[] = '<img class="img-fluid'.(isset($options["imageCssClass"]) ? " ".$options["imageCssClass"] : "").'"'.(!empty($options["objectPosition"]) ? ' style="object-position: '.$options["objectPosition"].'"' : '').' src="'.$options["emptyImageThumbnail"].'" alt="'.$options["altText"].'" />';
             } else {
                 $src = explode(" ", $options["imageSizes"][0]["image"]);
-                $html[] = '<img class="img-fluid'.(isset($options["imageCssClass"]) ? " ".$options["imageCssClass"] : "").'" src="'.$src[0].'" alt="'.($options["altText"] ?? '').'" />';
+                $html[] = '<img class="img-fluid'.(isset($options["imageCssClass"]) ? " ".$options["imageCssClass"] : "").'"'.(!empty($options["objectPosition"]) ? ' style="object-position: '.$options["objectPosition"].'"' : '').' src="'.$src[0].'" alt="'.($options["altText"] ?? '').'" />';
             }
         }
         if (!empty($options["hotspots"])) {
