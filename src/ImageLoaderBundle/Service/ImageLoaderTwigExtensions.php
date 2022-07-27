@@ -6,22 +6,47 @@ use Pimcore\Model\DataObject\Data;
 use Pimcore\Model\Document;
 use Pimcore\Model\Asset;
 use Pimcore\Model\Document\Editable;
+use Pimcore\Model\Document\PageSnippet;
+use Pimcore\Templating\Renderer\EditableRenderer;
 
 class ImageLoaderTwigExtensions extends \Twig\Extension\AbstractExtension {
 
+    private EditableRenderer $editableRenderer;
     private $disableCacheBuster = false;
     private $widths = [375, 578, 768, 992, 1400, 1920];
 
-    public function __construct($disableCacheBuster = false) {
+    public function __construct($disableCacheBuster = false, EditableRenderer $editableRenderer) {
         $this->disableCacheBuster = $disableCacheBuster;
+        $this->editableRenderer = $editableRenderer;
     }
 
     public function getFunctions() {
         return [
+            new \Twig\TwigFunction('imageloader_editable', [$this, 'imageloaderEditable'], [
+                'needs_context' => true,
+                'is_safe'       => ['html']
+            ]),
             new \Twig\TwigFunction('imageloader', [$this, 'imageloader'], ['is_safe' => ['html']]),
             new \Twig\TwigFunction('imageloader_asset', [$this, 'imageloaderFromAsset'], ['is_safe' => ['html']]),
             new \Twig\TwigFunction('imageloader_block', [$this, 'imageloaderFromBlock'], ['is_safe' => ['html']]),
         ];
+    }
+
+    public function imageloaderEditable(array $context, string $name, array $options = []) {
+        $document = $context['document'];
+        $editmode = $context['editmode'];
+        if (!($document instanceof PageSnippet)) {
+            return '';
+        }
+
+        if ($editmode) {
+            return $this->editableRenderer->render($document, 'image', $name, $options, $editmode);
+        } else {
+            $editable = $this->editableRenderer->getEditable($document, 'image', $name, $options, $editmode);
+            if ($editable instanceof Editable\Image) {
+                return $this->imageloaderFromBlock($editable);
+            }
+        }
     }
 
     public function imageloader($asset, array $options = []) {
@@ -116,7 +141,7 @@ class ImageLoaderTwigExtensions extends \Twig\Extension\AbstractExtension {
                 if (is_null($emptyImageThumbnail)) $emptyImageThumbnail = $thumbnail;
                 $imageSizes[] = [
                     'image' => $this->getThumbnailPath($thumbnail, $options, $cacheBusterTs).' '.$w,
-                    'size' => $thumbnail->getWidth().'/'.$thumbnail->getHeight().' '.$w,
+                    'size'  => $thumbnail->getWidth().'/'.$thumbnail->getHeight().' '.$w,
                 ];
             }
         } else {
@@ -127,14 +152,14 @@ class ImageLoaderTwigExtensions extends \Twig\Extension\AbstractExtension {
                     if (is_null($emptyImageThumbnail)) $emptyImageThumbnail = $thumbnail;
                     $imageSizes[] = [
                         'image' => $this->getThumbnailPath($thumbnail, $options, $cacheBusterTs).' '.$w,
-                        'size' => $thumbnail->getWidth().'/'.$thumbnail->getHeight().' '.$w,
+                        'size'  => $thumbnail->getWidth().'/'.$thumbnail->getHeight().' '.$w,
                     ];
                 } else {
                     $thumbnail = $imageElement->getThumbnail($this->getThumbnailConfig($thumbConfig, $w));
                     if (is_null($emptyImageThumbnail)) $emptyImageThumbnail = $thumbnail;
                     $imageSizes[] = [
                         'image' => $this->getThumbnailPath($thumbnail, $options, $cacheBusterTs).' '.$w,
-                        'size' => $thumbnail->getWidth().'/'.$thumbnail->getHeight().' '.$w,
+                        'size'  => $thumbnail->getWidth().'/'.$thumbnail->getHeight().' '.$w,
                     ];
                 }
             }
@@ -239,7 +264,7 @@ class ImageLoaderTwigExtensions extends \Twig\Extension\AbstractExtension {
         $thumb = $image->getThumbnail($thumbConfig, true);
         $imageSizes[2000] = [
             'image' => $this->getThumbnailPath($thumb, $options, $cacheBusterTs).' 2000',
-            'size' => $thumb->getWidth().'/'.$thumb->getHeight().' 2000',
+            'size'  => $thumb->getWidth().'/'.$thumb->getHeight().' 2000',
         ];
 
         foreach ($thumbConfig->getMedias() as $mediaQuery => $config) {
@@ -256,13 +281,13 @@ class ImageLoaderTwigExtensions extends \Twig\Extension\AbstractExtension {
                     $sourceTagAttributes['media'] = '(max-width: '.$maxWidth.'px)';
                     $imageSizes[intval($maxWidth)] = [
                         'image' => $this->getThumbnailPath($thumb, $options, $cacheBusterTs).' '.$maxWidth,
-                        'size' => $thumb->getWidth().'/'.$thumb->getHeight().' '.$maxWidth,
+                        'size'  => $thumb->getWidth().'/'.$thumb->getHeight().' '.$maxWidth,
                     ];
                 } else if (preg_match('/([\d]+)px/', $mediaQuery, $m)) {
                     $size = $m[1];
                     $imageSizes[intval($size)] = [
                         'image' => $this->getThumbnailPath($thumb, $options, $cacheBusterTs).' '.intval($size),
-                        'size' => $thumb->getWidth().'/'.$thumb->getHeight().' '.intval($size),
+                        'size'  => $thumb->getWidth().'/'.$thumb->getHeight().' '.intval($size),
                     ];
                 }
             }
