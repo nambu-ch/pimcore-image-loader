@@ -166,14 +166,10 @@ class ImageLoaderTwigExtensions extends \Twig\Extension\AbstractExtension {
 
         if (!($options["isBackgroundImage"]) || isset($options["imageCssClass"])) {
             if ($options["emptyImageThumbnail"] instanceof Asset\Image\Thumbnail) {
-                $html[] = $options["emptyImageThumbnail"]->getImageTag([
-                    "imgAttributes" => [
+                $html[] = '<img '.array_to_html_attribute_string([
                         "class" => "img-fluid".(isset($options["imageCssClass"]) ? " ".$options["imageCssClass"] : ""),
-                    ],
-                    "alt"   => $options["altText"] ?? '',
-                ],
-                    ["srcset", "width", "height"]
-                );
+                        "alt"   => $options["altText"] ?? ''
+                    ]).'>';
             } elseif (!empty($options["emptyImageThumbnail"])) {
                 $html[] = '<img class="img-fluid'.(isset($options["imageCssClass"]) ? " ".$options["imageCssClass"] : "").'"'.(!empty($options["objectPosition"]) ? ' style="object-position: '.$options["objectPosition"].'"' : '').' src="'.$options["emptyImageThumbnail"].'" alt="'.$options["altText"].'" />';
             } else {
