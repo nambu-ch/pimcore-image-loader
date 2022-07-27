@@ -41,6 +41,8 @@ There is now a version without the dependency of jquery at ``/bundles/imageloade
 ### Example
 
 ```twig
+{{ imageloader_editable("image") }}
+//or
 {% if editmode %}
     {{ pimcore_image("image", { width: 300 }) }}
 {% else %}
