@@ -44,7 +44,7 @@ class ImageLoaderTwigExtensions extends \Twig\Extension\AbstractExtension {
         } else {
             $editable = $this->editableRenderer->getEditable($document, 'image', $name, $options, $editmode);
             if ($editable instanceof Editable\Image) {
-                return $this->imageloaderFromBlock($editable);
+                return $this->imageloaderFromBlock($editable, $options);
             }
         }
     }
@@ -130,10 +130,11 @@ class ImageLoaderTwigExtensions extends \Twig\Extension\AbstractExtension {
 
         if (isset($options["thumbnail"])) {
             $thumbnailConfig = Asset\Image\Thumbnail\Config::getByName($options["thumbnail"]);
-            if ($thumbnailConfig != null) {
-                $imageSizes = $this->getImagesByThumbnailMedias($imageElement, $thumbnailConfig, $options, $cacheBusterTs);
-                return $imageSizes;
+            if (is_null($thumbnailConfig)) {
+                throw new \Exception("Thumbnail with name '".$options["thumbnail"]."' does not exist");
             }
+            $imageSizes = $this->getImagesByThumbnailMedias($imageElement, $thumbnailConfig, $options, $cacheBusterTs);
+            return $imageSizes;
         }
         if (is_array($thumbnailNames) && count($thumbnailNames) > 0) {
             foreach ($thumbnailNames as $w => $thumbnailName) {
