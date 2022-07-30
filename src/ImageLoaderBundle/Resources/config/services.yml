@@ -1,16 +1,16 @@
 services:
-  _defaults:
-    autowire: true
-    autoconfigure: true
+    _defaults:
+        autowire: true
+        autoconfigure: true
+        bind:
+            $disableCacheBuster: '%image_loader.cache_buster.disabled%'
 
-  imageloaderbundle.install.installer:
-    class: ImageLoaderBundle\Install\Installer
-    public: true
+    imageloaderbundle.install.installer:
+        class: ImageLoaderBundle\Install\Installer
+        public: true
 
-  imageloaderbundle.twig.extension:
-    class: ImageLoaderBundle\Service\ImageLoaderTwigExtensions
-    public: true
-    tags:
-      - { name: twig.extension }
-    arguments:
-      - '%image_loader.cache_buster.disabled%'
+    imageloaderbundle.twig.extension:
+        class: ImageLoaderBundle\Service\ImageLoaderTwigExtensions
+        public: true
+        tags:
+            - { name: twig.extension }

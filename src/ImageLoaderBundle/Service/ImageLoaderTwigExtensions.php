@@ -15,20 +15,17 @@ class ImageLoaderTwigExtensions extends \Twig\Extension\AbstractExtension {
     private $disableCacheBuster = false;
     private $widths = [375, 578, 768, 992, 1400, 1920];
 
-    public function __construct($disableCacheBuster = false, EditableRenderer $editableRenderer) {
+    public function __construct(EditableRenderer $editableRenderer, $disableCacheBuster = false) {
         $this->disableCacheBuster = $disableCacheBuster;
         $this->editableRenderer = $editableRenderer;
     }
 
     public function getFunctions() {
         return [
-            new \Twig\TwigFunction('imageloader_editable', [$this, 'imageloaderEditable'], [
-                'needs_context' => true,
-                'is_safe'       => ['html']
-            ]),
-            new \Twig\TwigFunction('imageloader', [$this, 'imageloader'], ['is_safe' => ['html']]),
+            new \Twig\TwigFunction('imageloader', [$this, 'imageloader'], ['needs_context' => true, 'is_safe' => ['html']]),
             new \Twig\TwigFunction('imageloader_asset', [$this, 'imageloaderFromAsset'], ['is_safe' => ['html']]),
             new \Twig\TwigFunction('imageloader_block', [$this, 'imageloaderFromBlock'], ['is_safe' => ['html']]),
+            new \Twig\TwigFunction('imageloader_editable', [$this, 'imageloaderEditable'], ['needs_context' => true, 'is_safe' => ['html']]),
         ];
     }
 
@@ -43,13 +40,13 @@ class ImageLoaderTwigExtensions extends \Twig\Extension\AbstractExtension {
             return $this->editableRenderer->render($document, 'image', $name, $options, $editmode);
         } else {
             $editable = $this->editableRenderer->getEditable($document, 'image', $name, $options, $editmode);
-            if ($editable instanceof Editable\Image) {
+            if ($editable instanceof Editable\Image && !$editable->isEmpty()) {
                 return $this->imageloaderFromBlock($editable, $options);
             }
         }
     }
 
-    public function imageloader($asset, array $options = []) {
+    public function imageloader(array $context, $asset, array $options = []) {
         if ($asset instanceof Asset\Image) {
             return $this->imageloaderFromAsset($asset, $options);
         }
@@ -59,7 +56,10 @@ class ImageLoaderTwigExtensions extends \Twig\Extension\AbstractExtension {
         if ($asset instanceof Data\Hotspotimage) {
             return $this->imageloaderFromObjectBlock($asset, $options);
         }
-        return 'First Parameter is object of wrong type, must be Pimcore\Model\Asset\Image, Pimcore\Model\Document\Editable\Image or Pimcore\Model\DataObject\Data\Hotspotimage.';
+        if (is_string($asset)) {
+            return $this->imageloaderEditable($context, $asset, $options);
+        }
+        return 'First Parameter is of wrong type, must be Pimcore\Model\Asset\Image, Pimcore\Model\Document\Editable\Image or Pimcore\Model\DataObject\Data\Hotspotimage or string.';
     }
 
     public function imageloaderFromAsset(Asset\Image $asset, array $options = []) {
