@@ -300,7 +300,7 @@ class ImageLoaderTwigExtensions extends \Twig\Extension\AbstractExtension {
     protected function getThumbnailPath($thumbnailPath, array $options, $cacheBusterTs = null) {
         if ($thumbnailPath instanceof Asset\Image\Thumbnail) {
             // generate temp config
-            $thumbnailPath->getPath();
+            $thumbnailPath->generate(true);
         }
         if ($this->disableCacheBuster === true || (isset($options["disableCacheBuster"]) && $options["disableCacheBuster"] === true)) {
             return $thumbnailPath;
