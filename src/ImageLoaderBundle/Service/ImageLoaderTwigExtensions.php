@@ -7,6 +7,7 @@ use Pimcore\Model\Document;
 use Pimcore\Model\Asset;
 use Pimcore\Model\Document\Editable;
 use Pimcore\Model\Document\PageSnippet;
+use Pimcore\Model\Tool\TmpStore;
 use Pimcore\Templating\Renderer\EditableRenderer;
 
 class ImageLoaderTwigExtensions extends \Twig\Extension\AbstractExtension {
@@ -300,7 +301,8 @@ class ImageLoaderTwigExtensions extends \Twig\Extension\AbstractExtension {
     protected function getThumbnailPath($thumbnailPath, array $options, $cacheBusterTs = null) {
         if ($thumbnailPath instanceof Asset\Image\Thumbnail) {
             // generate temp config
-            $thumbnailPath->generate(true);
+            $configId = 'thumb_' . $thumbnailPath->getAsset()->getId() . '__' . md5($thumbnailPath);
+            TmpStore::add($configId, $thumbnailPath->getConfig(), 'thumbnail_deferred');
         }
         if ($this->disableCacheBuster === true || (isset($options["disableCacheBuster"]) && $options["disableCacheBuster"] === true)) {
             return $thumbnailPath;
