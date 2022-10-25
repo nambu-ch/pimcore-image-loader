@@ -37,6 +37,8 @@ class ImageLoaderTwigExtensions extends \Twig\Extension\AbstractExtension {
         $imageSizes = $this->getImageSizeConfig($asset, $options, $emptyImageThumbnail);
         $options["imageSizes"] = $imageSizes;
         $options["emptyImageThumbnail"] = $options["emptyImageThumbnail"] ?? $emptyImageThumbnail;
+        if (empty($options["width"])) $options["width"] = $asset->getWidth();
+        if (empty($options["height"])) $options["height"] = $asset->getHeight();
 
         return $this->imageloaderFromOptions($options);
     }
@@ -50,6 +52,11 @@ class ImageLoaderTwigExtensions extends \Twig\Extension\AbstractExtension {
         $options["imageBlock"] = $imageBlock;
         $options["altText"] = $imageBlock->getAlt();
 
+        if (!$imageBlock->isEmpty()) {
+            $options["width"] = $imageBlock->getImage()->getWidth();
+            $options["height"] = $imageBlock->getImage()->getHeight();
+        }
+
         return $this->imageloaderFromOptions($options);
     }
 
@@ -60,6 +67,11 @@ class ImageLoaderTwigExtensions extends \Twig\Extension\AbstractExtension {
         $options["emptyImageThumbnail"] = $options["emptyImageThumbnail"] ?? $emptyImageThumbnail;
         $options["hotspots"] = $imageBlock->getHotspots();
         $options["imageBlock"] = $imageBlock;
+
+        if (!$imageBlock->isEmpty()) {
+            $options["width"] = $imageBlock->getImage()->getWidth();
+            $options["height"] = $imageBlock->getImage()->getHeight();
+        }
 
         return $this->imageloaderFromOptions($options);
     }
@@ -76,6 +88,11 @@ class ImageLoaderTwigExtensions extends \Twig\Extension\AbstractExtension {
         $thumbConfig = (is_array($options["thumbnail"]) ? $options["thumbnail"] : []);
         $widths = (is_array($options["widths"]) ? $options["widths"] : $this->widths);
 
+        $timestamp = 0;
+        if ($imageElement instanceof Asset\Image) $timestamp = $imageElement->getModificationDate() ?? '0';
+        if ($imageElement instanceof Document\Editable\Image && !$imageElement->isEmpty()) $timestamp = $imageElement->getImage()->getModificationDate() ?? '0';
+        $cacheBuster = '/cache-buster-'.$timestamp;
+
         if (is_string($options["thumbnail"])) {
             $thumbnailConfig = Asset\Image\Thumbnail\Config::getByName($options["thumbnail"]);
             if ($thumbnailConfig != null && count($thumbnailConfig->getMedias()) > 0) {
@@ -85,7 +102,7 @@ class ImageLoaderTwigExtensions extends \Twig\Extension\AbstractExtension {
         }
         if (is_array($thumbnailNames) && count($thumbnailNames) > 0) {
             foreach ($thumbnailNames as $w => $thumbnailName) {
-                $thumbnail = $imageElement->getThumbnail($thumbnailName);
+                $thumbnail = $cacheBuster.$imageElement->getThumbnail($thumbnailName);
                 if (is_null($emptyImageThumbnail)) $emptyImageThumbnail = $thumbnail;
                 $imageSizes[] = $thumbnail.' '.$w;
             }
@@ -93,11 +110,11 @@ class ImageLoaderTwigExtensions extends \Twig\Extension\AbstractExtension {
             foreach ($widths as $w) {
                 if (isset($sizesOptions[$w])) {
                     $image = $sizesOptions[$w]['imageTag'];
-                    $thumbnail = $image->getThumbnail($this->getThumbnailConfig($thumbConfig, $w));
+                    $thumbnail = $cacheBuster.$image->getThumbnail($this->getThumbnailConfig($thumbConfig, $w));
                     if (is_null($emptyImageThumbnail)) $emptyImageThumbnail = $thumbnail;
                     $imageSizes[] = $thumbnail.' '.$w;
                 } else {
-                    $thumbnail = $imageElement->getThumbnail($this->getThumbnailConfig($thumbConfig, $w));
+                    $thumbnail = $cacheBuster.$imageElement->getThumbnail($this->getThumbnailConfig($thumbConfig, $w));
                     if (is_null($emptyImageThumbnail)) $emptyImageThumbnail = $thumbnail;
                     $imageSizes[] = $thumbnail.' '.$w;
                 }
@@ -123,15 +140,15 @@ class ImageLoaderTwigExtensions extends \Twig\Extension\AbstractExtension {
             if ($options["emptyImageThumbnail"] instanceof Asset\Image\Thumbnail) {
                 $html[] = $options["emptyImageThumbnail"]->getHtml([
                     "class" => "img-fluid ".$options["imageCssClass"],
-                    "alt" => $options["altText"] ?? '',
+                    "alt"   => $options["altText"] ?? '',
                 ],
                     ["srcset", "width", "height"]
                 );
             } elseif (!empty($options["emptyImageThumbnail"])) {
-                $html[] = '<img class="img-fluid '.$options["imageCssClass"].'" src="'.$options["emptyImageThumbnail"].'" alt="'. $options["altText"].'" />';
+                $html[] = '<img class="img-fluid '.$options["imageCssClass"].'" src="'.$options["emptyImageThumbnail"].'" alt="'.$options["altText"].'"'.($options["width"] ? ' width="'.$options["width"].'"' : '').($options["height"] ? ' height="'.$options["height"].'"' : '').'/>';
             } else {
                 $src = explode(" ", $options["imageSizes"][0]);
-                $html[] = '<img class="img-fluid '.$options["imageCssClass"].'" src="'.$src[0].'" alt="'.($options["altText"] ?? '').'" />';
+                $html[] = '<img class="img-fluid '.$options["imageCssClass"].'" src="'.$src[0].'" alt="'.($options["altText"] ?? '').'"'.($options["width"] ? ' width="'.$options["width"].'"' : '').($options["height"] ? ' height="'.$options["height"].'"' : '').'/>';
             }
         }
         if (!empty($options["hotspots"])) {
@@ -196,12 +213,17 @@ class ImageLoaderTwigExtensions extends \Twig\Extension\AbstractExtension {
         $thumb = $image->getThumbnail($thumbConfig, true);
         $imageSizes[2000] = $thumb.' 2000';
 
+        $timestamp = 0;
+        if ($image instanceof Asset\Image) $timestamp = $image->getModificationDate() ?? '0';
+        if ($image instanceof Document\Editable\Image && !$image->isEmpty()) $timestamp = $image->getImage()->getModificationDate() ?? '0';
+        $cacheBuster = '/cache-buster-'.$timestamp;
+
         foreach ($thumbConfig->getMedias() as $mediaQuery => $config) {
             $thumb = null;
             $thumbConfigRes = clone $thumbConfig;
             $thumbConfigRes->selectMedia($mediaQuery);
             $thumbConfigRes->setHighResolution(1);
-            $thumb = $image->getThumbnail($thumbConfigRes, true);
+            $thumb = $cacheBuster.$image->getThumbnail($thumbConfigRes, true);
 
             if ($mediaQuery) {
                 if (preg_match('/^[\d]+w$/', $mediaQuery)) {
