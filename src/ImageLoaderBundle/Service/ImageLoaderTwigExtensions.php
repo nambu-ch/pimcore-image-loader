@@ -171,38 +171,45 @@ class ImageLoaderTwigExtensions extends \Twig\Extension\AbstractExtension {
     }
 
     protected function imageloaderFromOptions(array $options) {
-        if (!isset($options["isBackgroundImage"])) $options["isBackgroundImage"] = false;
-
-        $html = ['<div style="position:relative;overflow:hidden;" class="image-loader"'];
-        if (isset($options["sizeSelector"]) && !empty($options["sizeSelector"])) {
-            $html[] = ' data-sizeSelector="'.$options["sizeSelector"].'"';
-        }
         $imgPaths = [];
         $imgSizes = [];
         foreach ($options["imageSizes"] as $size => $item) {
             $imgPaths[] = $item["image"];
             $imgSizes[] = $item["size"];
         }
-        $html[] = ' data-loader="'.join(",", $imgPaths).'"';
-        if ($options["setImageSize"] ?? false) {
-            $html[] = ' data-sizes="'.join(",", $imgSizes).'"';
-        }
-        $html[] = (($options["isBackgroundImage"]) ? ' data-loader-bg="true"' : '').'';
-        $html[] = ((isset($options["lazyLoad"]) && $options["lazyLoad"]) ? ' data-lazyload="true"' : '').'';
-        $html[] = '>';
 
-        if (!($options["isBackgroundImage"]) || isset($options["imageCssClass"])) {
+        $attrs = [
+            'class'       => 'image-loader',
+            'style'       => 'position:relative;overflow:hidden',
+            'data-loader' => join(",", $imgPaths)
+        ];
+
+        if ($options["isBackgroundImage"] ?? false) $attrs['data-loader-bg'] = "true";
+        if (!empty($options['class'])) $attrs['class'] .= ' '.$options['class'];
+        if (!empty($options['lazyLoad'])) $attrs['data-lazyload'] = "true";
+        if (!empty($options['setImageSize'])) $attrs['data-sizes'] = join(",", $imgSizes);
+        if (!empty($options['sizeSelector'])) $attrs['data-sizeSelector'] = $options["sizeSelector"];
+
+        $html = [];
+        $html[] = '<div '.array_to_html_attribute_string($attrs).'>';
+
+        if (!($options["isBackgroundImage"] ?? false) || isset($options["imageCssClass"])) {
+            $attrs = [
+                'class' => 'img-fluid'
+            ];
+            if (!empty($options["imageCssClass"])) $attrs['class'] .= ' '.$options["imageCssClass"];
+            if (!empty($options["altText"])) $attrs['altText'] = $options["altText"];
+            if (!empty($options["objectPosition"])) $attrs['style'] = 'object-position: '.$options["objectPosition"];
+
             if ($options["emptyImageThumbnail"] instanceof Asset\Image\Thumbnail) {
-                $html[] = '<img '.array_to_html_attribute_string([
-                        "class" => "img-fluid".(isset($options["imageCssClass"]) ? " ".$options["imageCssClass"] : ""),
-                        "alt"   => $options["altText"] ?? ''
-                    ]).'>';
+                $attrs['src'] = $options["emptyImageThumbnail"]->getPath();
             } elseif (!empty($options["emptyImageThumbnail"])) {
-                $html[] = '<img class="img-fluid'.(isset($options["imageCssClass"]) ? " ".$options["imageCssClass"] : "").'"'.(!empty($options["objectPosition"]) ? ' style="object-position: '.$options["objectPosition"].'"' : '').' src="'.$options["emptyImageThumbnail"].'" alt="'.$options["altText"].'" />';
-            } else {
-                $src = explode(" ", $options["imageSizes"][0]["image"]);
-                $html[] = '<img class="img-fluid'.(isset($options["imageCssClass"]) ? " ".$options["imageCssClass"] : "").'"'.(!empty($options["objectPosition"]) ? ' style="object-position: '.$options["objectPosition"].'"' : '').' src="'.$src[0].'" alt="'.($options["altText"] ?? '').'" />';
+                $attrs['src'] = $options["emptyImageThumbnail"];
+            } elseif (isset($options["imageSizes"][0]["image"])) {
+                $attrs['src'] = explode(" ", $options["imageSizes"][0]["image"]);
             }
+
+            $html[] = '<img '.array_to_html_attribute_string($attrs).'>';
         }
         if (!empty($options["hotspots"])) {
             $html[] = $this->getHotspotLinks($options["imageBlock"], $options["hotspots"]);
