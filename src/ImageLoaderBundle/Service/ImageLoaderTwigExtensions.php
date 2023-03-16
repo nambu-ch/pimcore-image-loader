@@ -75,7 +75,7 @@ class ImageLoaderTwigExtensions extends \Twig\Extension\AbstractExtension {
 
     public function imageloaderFromBlock(Editable\Image $imageBlock, array $options = []) {
         $emptyImageThumbnail = null;
-        $imageSizes = $this->getImageSizeConfig($imageBlock, $options, $emptyImageThumbnail, $imageBlock->getImage()->getModificationDate());
+        $imageSizes = $this->getImageSizeConfig($imageBlock, $options, $emptyImageThumbnail, $imageBlock->getImage()?->getModificationDate());
         $options["imageSizes"] = $imageSizes;
         $options["emptyImageThumbnail"] = $options["emptyImageThumbnail"] ?? $emptyImageThumbnail;
         $options["hotspots"] = $imageBlock->getHotspots();
@@ -88,7 +88,7 @@ class ImageLoaderTwigExtensions extends \Twig\Extension\AbstractExtension {
 
     public function imageloaderFromObjectBlock(Data\Hotspotimage $imageBlock, array $options = []) {
         $emptyImageThumbnail = null;
-        $imageSizes = $this->getImageSizeConfig($imageBlock, $options, $emptyImageThumbnail, $imageBlock->getImage()->getModificationDate());
+        $imageSizes = $this->getImageSizeConfig($imageBlock, $options, $emptyImageThumbnail, $imageBlock->getImage()?->getModificationDate());
         $options["imageSizes"] = $imageSizes;
         $options["emptyImageThumbnail"] = $options["emptyImageThumbnail"] ?? $emptyImageThumbnail;
         $options["hotspots"] = $imageBlock->getHotspots();
@@ -198,7 +198,7 @@ class ImageLoaderTwigExtensions extends \Twig\Extension\AbstractExtension {
                 'class' => 'img-fluid'
             ];
             if (!empty($options["imageCssClass"])) $attrs['class'] .= ' '.$options["imageCssClass"];
-            if (!empty($options["altText"])) $attrs['altText'] = $options["altText"];
+            if (!empty($options["altText"])) $attrs['alt'] = $options["altText"];
             if (!empty($options["objectPosition"])) $attrs['style'] = 'object-position: '.$options["objectPosition"];
 
             if ($options["emptyImageThumbnail"] instanceof Asset\Image\Thumbnail) {
