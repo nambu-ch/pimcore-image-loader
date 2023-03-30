@@ -20,6 +20,13 @@
                 var w = parseInt(params[1]);
                 sizes[w] = params[0].split("/");
             }
+            var imgRatios = (this.element.attr('data-ratios') ?? '').split(",");
+            var ratios = {};
+            for (var i = 0; i < imgRatios.length; i++) {
+                var params = imgRatios[i].split(" ");
+                var w = parseInt(params[1]);
+                ratios[w] = params[0];
+            }
             var sizeEl = (this.element.is('[data-sizeSelector]')) ? this.element.closest(this.element.attr('data-sizeSelector')) : this.element;
             if (this.element.is('[data-sizeSelectorAbs]')) {
                 sizeEl = $(this.element.attr('data-sizeSelectorAbs'));
@@ -27,6 +34,7 @@
             this._sizeSelector = sizeEl;
             this._widths = widths;
             this._sizes = sizes;
+            this._ratios = ratios;
             this.element.addClass('inited');
         }
         if (this.element.is('[data-lazyload]')) {
@@ -39,6 +47,8 @@
                     }
                 });
             });
+            var width = this.getContainerWidth();
+            this.element.find('img').css('aspectRatio', this._ratios[width]);
             imageObserver.observe(element);
         } else {
             this.onResized();
@@ -77,10 +87,24 @@
             }
         },
 
+        getContainerWidth() {
+            var width = this._sizeSelector.width();
+            var lastWidth = 0;
+
+            Object.keys(this._widths).forEach(function (w) {
+                lastWidth = w;
+                if (w > width) {
+                    return w;
+                }
+            });
+            return lastWidth;
+        },
+
         changeImage: function (width, asBackground) {
             var imageEl = this.element;
             var widths = this._widths;
             var sizes = this._sizes;
+            var ratios = this._ratios;
             if (asBackground) {
                 if (imageEl.css('background-image') !== 'url(' + widths[width] + ')') {
                     imageEl.css('background-image', 'url(' + widths[width] + ')');
@@ -94,6 +118,9 @@
                     if (imageEl.is('[data-sizes]')) {
                         imgEl.attr('width', sizes[width][0]);
                         imgEl.attr('height', sizes[width][1]);
+                    }
+                    if (imageEl.is('[data-lazyload]')) {
+                        imgEl.css('aspectRatio', ratios[width]);
                     }
                     return true;
                 }

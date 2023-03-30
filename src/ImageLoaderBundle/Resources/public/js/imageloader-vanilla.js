@@ -4,6 +4,7 @@ class ImageLoader {
         this.imageTag = this.imageElement.querySelector('img');
         this.imagePaths = {};
         this.imageSizes = {};
+        this.imageRatios = {};
         this.sizeSelector = imageElement;
         //
         let images = imageElement.dataset.loader.split(',');
@@ -18,6 +19,13 @@ class ImageLoader {
             var params = imageSizes[i].split(" ");
             var w = parseInt(params[1]);
             this.imageSizes[w] = params[0].split("/");
+        }
+        //
+        let imageRatios = (imageElement.dataset.ratios || '').split(',');
+        for (var i = 0; i < imageRatios.length; i++) {
+            var params = imageRatios[i].split(" ");
+            var w = parseInt(params[1]);
+            this.imageRatios[w] = params[0];
         }
         //
         if (imageElement.dataset.sizeSelector) {
@@ -40,9 +48,11 @@ class ImageLoader {
                     }
                 });
             });
+            var width = this.getContainerWidth();
+            this.imageElement.style.aspectRatio = this.imageRatios[width];
             imageObserver.observe(this.imageElement);
         } else {
-            this.imageElement.classList.add('inited');
+            this.imageTag.classList.add('inited');
             this.resizeImage();
         }
     }
@@ -59,7 +69,7 @@ class ImageLoader {
 
         Object.keys(this.imagePaths).forEach((w) => {
             lastWidth = w;
-            if (w > width && !found) {
+            if (w >= width && !found) {
                 if (this.changeImage(w, asBackground)) {
                     hasChanges = true;
                 }
@@ -72,6 +82,20 @@ class ImageLoader {
                 hasChanges = true;
             }
         }
+    }
+
+    getContainerWidth() {
+        var width = this.sizeSelector.clientWidth;
+        var lastWidth = 0;
+
+        Object.keys(this.imagePaths).forEach((w) => {
+            lastWidth = w;
+            if (w >= width) {
+                return w;
+            }
+        });
+
+        return lastWidth;
     }
 
     changeImage(width, asBackground) {
@@ -89,6 +113,9 @@ class ImageLoader {
             if (this.imageElement.dataset.sizes) {
                 this.imageTag.width = this.imageSizes[width][0];
                 this.imageTag.height = this.imageSizes[width][1];
+            }
+            if (this.imageElement.dataset.lazyload) {
+                this.imageTag.style.aspectRatio = this.imageRatios[width];
             }
             return true;
         }

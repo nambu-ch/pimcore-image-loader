@@ -173,15 +173,18 @@ class ImageLoaderTwigExtensions extends \Twig\Extension\AbstractExtension {
     protected function imageloaderFromOptions(array $options) {
         $imgPaths = [];
         $imgSizes = [];
+        $imgRatios = [];
         foreach ($options["imageSizes"] as $size => $item) {
             $imgPaths[] = $item["image"];
             $imgSizes[] = $item["size"];
+            $imgRatios[] = $item["size"];
         }
 
         $attrs = [
             'class'       => 'image-loader',
             'style'       => 'position:relative;overflow:hidden',
-            'data-loader' => join(",", $imgPaths)
+            'data-loader' => join(",", $imgPaths),
+            'data-ratios' => join(",", $imgRatios),
         ];
 
         if ($options["isBackgroundImage"] ?? false) $attrs['data-loader-bg'] = "true";
