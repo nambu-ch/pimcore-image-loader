@@ -209,7 +209,7 @@ class ImageLoaderTwigExtensions extends \Twig\Extension\AbstractExtension {
             } elseif (!empty($options["emptyImageThumbnail"])) {
                 $attrs['src'] = $options["emptyImageThumbnail"];
             } elseif (isset($options["imageSizes"][0]["image"])) {
-                $attrs['src'] = explode(" ", $options["imageSizes"][0]["image"]);
+                $attrs['src'] = explode(" ", $options["imageSizes"][0]["image"])[0];
             }
 
             $html[] = '<img '.array_to_html_attribute_string($attrs).'>';
