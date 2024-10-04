@@ -17,21 +17,19 @@ class Configuration implements ConfigurationInterface {
         $treeBuilder = new Builder\TreeBuilder('image_loader');
         $rootNode = $treeBuilder->getRootNode();
 
-        $rootNode->children()->append($this->getAdapterTreeDefinition());
-
-        // Here you should define the parameters that are allowed to
-        // configure your bundle. See the documentation linked above for
-        // more information on that topic.
+        //@formatter:off
+        $rootNode
+            ->children()
+                ->arrayNode('cache_buster')
+                    ->children()
+                        ->booleanNode('disabled')->end()
+                    ->end()
+                ->end()
+                ->booleanNode('lazyloading')->end()
+            ->end();
+        //@formatter:on
 
         return $treeBuilder;
     }
 
-    private function getAdapterTreeDefinition() {
-        $adapterTree = new Builder\ArrayNodeDefinition('cache_buster');
-        $adapterTree
-            ->children()
-            ->booleanNode('disabled')->end()
-            ->end();
-        return $adapterTree;
-    }
 }

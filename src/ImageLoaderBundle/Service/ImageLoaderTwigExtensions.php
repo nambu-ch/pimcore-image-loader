@@ -13,11 +13,11 @@ use Pimcore\Templating\Renderer\EditableRenderer;
 class ImageLoaderTwigExtensions extends \Twig\Extension\AbstractExtension {
 
     private EditableRenderer $editableRenderer;
-    private $disableCacheBuster = false;
+    private $config = [];
     private $widths = [375, 578, 768, 992, 1400, 1920];
 
-    public function __construct(EditableRenderer $editableRenderer, $disableCacheBuster = false) {
-        $this->disableCacheBuster = $disableCacheBuster;
+    public function __construct(EditableRenderer $editableRenderer, $imageLoaderConfig = []) {
+        $this->config = $imageLoaderConfig;
         $this->editableRenderer = $editableRenderer;
     }
 
@@ -200,6 +200,9 @@ class ImageLoaderTwigExtensions extends \Twig\Extension\AbstractExtension {
             $attrs = [
                 'class' => 'img-fluid'
             ];
+            if ($this->config['lazyloading'] ?? false) {
+                $attrs['loading'] = "lazy";
+            }
             if (!empty($options["imageCssClass"])) $attrs['class'] .= ' '.$options["imageCssClass"];
             if (!empty($options["altText"])) $attrs['alt'] = $options["altText"];
             if (!empty($options["objectPosition"])) $attrs['style'] = 'object-position: '.$options["objectPosition"];
@@ -314,7 +317,7 @@ class ImageLoaderTwigExtensions extends \Twig\Extension\AbstractExtension {
             $configId = 'thumb_' . $thumbnailPath->getAsset()->getId() . '__' . md5($thumbnailPath);
             TmpStore::add($configId, $thumbnailPath->getConfig(), 'thumbnail_deferred');
         }
-        if ($this->disableCacheBuster === true || (isset($options["disableCacheBuster"]) && $options["disableCacheBuster"] === true)) {
+        if ($this->config['cache_buster']['disabled'] === true || (isset($options["disableCacheBuster"]) && $options["disableCacheBuster"] === true)) {
             return $thumbnailPath;
         }
         return ($cacheBusterTs != null ? '/cache-buster-'.$cacheBusterTs : '').$thumbnailPath;

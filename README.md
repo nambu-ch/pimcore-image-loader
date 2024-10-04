@@ -12,9 +12,11 @@ php bin/console pimcore:bundle:enable ImageLoaderBundle
 ```
 
 ## Dependencies
+
 This library needs Bootstrap and jQuery to work.
 
 ### Get rid of bootstrap
+
 As an easy fix you can add the following css definition to your own style, so you don't need to include bootstrap:
 
 ```css
@@ -70,35 +72,38 @@ $('.accordion-collapse').on('show.bs.collapse', function () {
 });
 ```
 
-### Cache Buster
+### Configuration
 
-CacheBuster is enabled to all images by default. It takes the modification date of the image asset to refresh cache if needed.
-It can be disabled with an option available inside the twig function. To disable CacheBuster globally you can use yml configuration as follows.
+| Name                    | Type    | Description                                                                                        |
+|-------------------------|---------|----------------------------------------------------------------------------------------------------|
+| `cache_buster.disabled` | boolean | It takes the modification date of the image asset to refresh cache if needed. (enabled by default) |
+| `lazyloading`           | boolean | lazyloading adds the loading="lazy" to the image tag.                                              |
 
 ```
 image_loader:
   cache_buster:
     disabled: true
+  lazyloading: false
 ```
 
 ### Available options
 
 Following options are available:
 
-| Name                  | Type                   | Description                                                                                                               |
-|-----------------------|------------------------|---------------------------------------------------------------------------------------------------------------------------|
-| `isBackgroundImage`   | boolean                | Set to true to load image as css background, instead of img-tag.                                                          |
-| `imageCssClass`       | string                 | A CSS class to apply to the image.                                                                                        |
-| `thumbnailNames`      | array                  | List of size => thumbnail-names to generate the different sizes. e.g. ```[ 320 => 'thumb-small', 1024 => 'thumb-big' ]``` |
-| `sizeSelector`        | string                 | jQuery CSS selector to a html element which will be used for determining the size. e.g. '.some-element'                   |
-| `widths`              | array                  | List of thumbnail widths to override default sizes e.g. ```[ 480, 1024, 1920 ]```                                         |
-| `sizesOptions`        | array                  | List of options e.g. ```[ 480 => [ 'size' => 480, 'imageTag' => $view->image('image-480') ]``` ]                          |
-| `altText`             | string                 | Alt-Text of the image.                                                                                                    |
-| `setImageSize`        | boolean                | Set width and height attributes on img element.                                                                           |
-| `thumbnail`           | string                 | Thumbnail-Name from Pimcore configuration.                                                                                |
-| `emptyImageThumbnail` | string or Asset\Image  | Path to an Image or a Pimcore Asset\Image which is shown at start before imageloader determines the fitting thumbnail     |
-| `lazyLoad`            | boolean                | Enable lazy loading via IntersectionObserver                                                                              |
-| `disableCacheBuster`  | boolean                | Disable Cache Buster                                                                                                      |
+| Name                  | Type                  | Description                                                                                                               |
+|-----------------------|-----------------------|---------------------------------------------------------------------------------------------------------------------------|
+| `isBackgroundImage`   | boolean               | Set to true to load image as css background, instead of img-tag.                                                          |
+| `imageCssClass`       | string                | A CSS class to apply to the image.                                                                                        |
+| `thumbnailNames`      | array                 | List of size => thumbnail-names to generate the different sizes. e.g. ```[ 320 => 'thumb-small', 1024 => 'thumb-big' ]``` |
+| `sizeSelector`        | string                | jQuery CSS selector to a html element which will be used for determining the size. e.g. '.some-element'                   |
+| `widths`              | array                 | List of thumbnail widths to override default sizes e.g. ```[ 480, 1024, 1920 ]```                                         |
+| `sizesOptions`        | array                 | List of options e.g. ```[ 480 => [ 'size' => 480, 'imageTag' => $view->image('image-480') ]``` ]                          |
+| `altText`             | string                | Alt-Text of the image.                                                                                                    |
+| `setImageSize`        | boolean               | Set width and height attributes on img element.                                                                           |
+| `thumbnail`           | string                | Thumbnail-Name from Pimcore configuration.                                                                                |
+| `emptyImageThumbnail` | string or Asset\Image | Path to an Image or a Pimcore Asset\Image which is shown at start before imageloader determines the fitting thumbnail     |
+| `lazyLoad`            | boolean               | Enable lazy loading via IntersectionObserver (deprecated)                                                                 |
+| `disableCacheBuster`  | boolean               | Disable Cache Buster                                                                                                      |
 
 ### Advanced usage
 
