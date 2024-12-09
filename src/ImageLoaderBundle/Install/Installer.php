@@ -26,15 +26,14 @@ class Installer extends AbstractInstaller {
     /**
      * {@inheritdoc}
      */
-    public function install() {
+    public function install(): void {
         $this->copyConfigFile();
-        return true;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function uninstall() {
+    public function uninstall(): void {
         $target = PIMCORE_PRIVATE_VAR . self::LOCAL_CONFIG_PATH;
         if ($this->fileSystem->exists(PIMCORE_PRIVATE_VAR . self::LOCAL_CONFIG_BACKUP_PATH)) {
             $this->fileSystem->remove(PIMCORE_PRIVATE_VAR . self::LOCAL_CONFIG_BACKUP_PATH);
@@ -50,7 +49,7 @@ class Installer extends AbstractInstaller {
     /**
      * {@inheritdoc}
      */
-    public function isInstalled() {
+    public function isInstalled(): bool {
         $target = PIMCORE_PRIVATE_VAR . self::LOCAL_CONFIG_PATH;
         return $this->fileSystem->exists($target);
     }
@@ -58,7 +57,7 @@ class Installer extends AbstractInstaller {
     /**
      * {@inheritdoc}
      */
-    public function canBeInstalled() {
+    public function canBeInstalled(): bool {
         $target = PIMCORE_PRIVATE_VAR . self::LOCAL_CONFIG_PATH;
         return !$this->fileSystem->exists($target);
     }
@@ -66,7 +65,7 @@ class Installer extends AbstractInstaller {
     /**
      * {@inheritdoc}
      */
-    public function canBeUninstalled() {
+    public function canBeUninstalled(): bool {
         $target = PIMCORE_PRIVATE_VAR . self::LOCAL_CONFIG_PATH;
         return $this->fileSystem->exists($target);
     }
@@ -74,14 +73,14 @@ class Installer extends AbstractInstaller {
     /**
      * {@inheritdoc}
      */
-    public function needsReloadAfterInstall() {
+    public function needsReloadAfterInstall(): bool {
         return false;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function canBeUpdated() {
+    public function canBeUpdated(): bool {
         return false;
     }
 
