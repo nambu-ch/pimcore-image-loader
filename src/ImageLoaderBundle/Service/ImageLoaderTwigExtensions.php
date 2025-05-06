@@ -69,6 +69,9 @@ class ImageLoaderTwigExtensions extends \Twig\Extension\AbstractExtension {
         $options["imageSizes"] = $imageSizes;
         $options["emptyImageThumbnail"] = $options["emptyImageThumbnail"] ?? $emptyImageThumbnail;
         $options["objectPosition"] = $this->getImageObjectPosition($asset);
+        if (empty($options['altText'])) {
+            $options['altText'] = $asset->getMetadata('alt');
+        }
 
         return $this->imageloaderFromOptions($options);
     }
@@ -80,8 +83,13 @@ class ImageLoaderTwigExtensions extends \Twig\Extension\AbstractExtension {
         $options["emptyImageThumbnail"] = $options["emptyImageThumbnail"] ?? $emptyImageThumbnail;
         $options["hotspots"] = $imageBlock->getHotspots();
         $options["imageBlock"] = $imageBlock;
-        $options["altText"] = $imageBlock->getAlt();
         $options["objectPosition"] = $this->getImageObjectPosition($imageBlock->getImage());
+        if (empty($options['altText'])) {
+            $options["altText"] = $imageBlock->getAlt();
+        }
+        if (empty($options['altText'])) {
+            $options['altText'] = $imageBlock->getImage()->getMetadata('alt');
+        }
 
         return $this->imageloaderFromOptions($options);
     }
@@ -94,6 +102,9 @@ class ImageLoaderTwigExtensions extends \Twig\Extension\AbstractExtension {
         $options["hotspots"] = $imageBlock->getHotspots();
         $options["imageBlock"] = $imageBlock;
         $options["objectPosition"] = $this->getImageObjectPosition($imageBlock->getImage());
+        if (empty($options['altText'])) {
+            $options['altText'] = $imageBlock->getImage()->getMetadata('alt');
+        }
 
         return $this->imageloaderFromOptions($options);
     }
